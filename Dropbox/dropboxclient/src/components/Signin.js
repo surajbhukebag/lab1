@@ -1,11 +1,17 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import {connect} from 'react-redux';
+import { Route, withRouter } from 'react-router-dom';
+import {userSignin} from "../actions/useractions";
+import { Alert, Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
 class Signin extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      modal: false
+      modal: false,
+      "email":"",
+      "password":""
     };
 
     this.toggle = this.toggle.bind(this);
@@ -17,27 +23,46 @@ class Signin extends React.Component {
     });
   }
 
+  navigate() {
+    this.props.history.push('/home');
+  }
+
   render() {
+
+    if(this.props.isLoggedIn){
+      this.navigate();
+    }
+
     return (
       <div>
         <Button outline color="secondary" onClick={this.toggle}>{this.props.buttonLabel}</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader>Sign In</ModalHeader>
           <ModalBody>
+        
+          {this.props.msg ? <Alert color="success">{this.props.msg}</Alert> : ''}
             <Form>
                 <FormGroup>
                   <Label for="email">Email</Label>
-                  <Input type="email" name="email" id="email" placeholder="Email" />
+                  <Input type="email" name="semail" id="semail" placeholder="Email" onChange={(event) => {
+                                    this.setState({
+                                        email: event.target.value
+                                    });
+                                }} />
                 </FormGroup>
                 <FormGroup>
                   <Label for="password">Password</Label>
-                  <Input type="password" name="password" id="password" placeholder="Password" />
+                  <Input type="password" name="spassword" id="spassword" placeholder="Password"  onChange={(event) => {
+                                    this.setState({
+                                        password: event.target.value
+                                    });
+                                }} />
                 </FormGroup>
                 
             </Form>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>Login</Button>{' '}
+            <Button color="primary" onClick={() => {this.props.signin(this.state)}} >Login</Button>{' '}
             <Button color="secondary" onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>
@@ -46,4 +71,20 @@ class Signin extends React.Component {
   }
 }
 
-export default Signin;
+function mapDispatchToProps(dispatch) {
+    return {
+        signin : (data) => dispatch(userSignin(data))
+    };
+}
+
+function mapStateToProps(user) {
+  if(user.user != null) {
+      const isLoggedIn = user.user.user.loggedin;
+      const msg = user.user.user.signinmsg;
+      return {isLoggedIn, msg};
+  }
+    
+}
+
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps) (Signin));

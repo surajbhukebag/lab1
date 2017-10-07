@@ -8,6 +8,7 @@ import FilesHome from './FilesHome'
 import UserSettings from './UserSettings'
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
+import dropbox from './../images/dropbox.jpg';
 import { Button } from 'reactstrap';
 
 class Root extends Component {
@@ -27,14 +28,15 @@ class Root extends Component {
 									<NavHeader />
 
 								</div>		                    
-
+								<br/><br/><br/>
 			                    <div className="row">
-				                    <div className="col-md-6 bg-info">
-				                        {"You have landed on my App !!"}
-				                        
+				                    <div className="col-md-6">
+				                        <div><img  src={dropbox} alt="dropbox"/></div>				                        
 				                    </div>
 
 				                     <div className="col-md-6">
+				                     	<p className="text-left"><h3>Sign up for new account </h3></p> 
+				                     	<br/>
 				                        <Signup />
 				                        
 				                    </div>

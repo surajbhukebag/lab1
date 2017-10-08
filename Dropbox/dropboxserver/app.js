@@ -47,6 +47,7 @@ app.post('/signin', cors(), user.signin);
 
 app.post('/listdir',cors(), files.listdir);
 app.post('/fileupload',cors(), fileupload.uploadfile);
+app.post('/createFolder',cors(), files.createFolder);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

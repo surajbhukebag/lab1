@@ -44,5 +44,22 @@ function listdir(req,res)
 	});
 }
 
+function createFolder(req,res)
+{
+	res.contentType('application/json');
+
+	fs.mkdir("./files/" + req.body.email+"/"+req.body.folderName, function(err) {
+		if (!err) {
+			let responseJson = {code:200, msg:"New folder with name "+req.body.folderName+" created"};
+			res.send(JSON.stringify(responseJson));	
+
+		} else {
+			res.send(JSON.stringify({code:500, msg:"New folder creation failed"}));
+		}
+	});
+
+}
+
 
 exports.listdir = listdir;
+exports.createFolder = createFolder;

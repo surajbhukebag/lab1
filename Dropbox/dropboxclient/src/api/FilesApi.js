@@ -39,3 +39,21 @@ export const fileupload = (payload) =>
             console.log("File Upload failed");
             return error;
     });
+
+export const createFolder = (payload) =>  
+    fetch(`${api}/createFolder`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Create Dir failed");
+            return error;
+    });

@@ -6,6 +6,7 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap
 import logo from './../images/user.png';
 import { Link } from 'react-router-dom';
 import {fileUpload} from "../actions/files";
+import NewFolder from "./NewFolder";
 
 class HomeRightNav extends React.Component {
 
@@ -61,7 +62,7 @@ class HomeRightNav extends React.Component {
                </label>
               </NavItem>
                <NavItem>
-                <NavLink href="#"> New Folder</NavLink>
+                <NewFolder buttonLabel="Create Folder"/>
               </NavItem>
               <NavItem>
                 <NavLink href="#">New Shared File</NavLink>

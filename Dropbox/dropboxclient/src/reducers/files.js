@@ -13,8 +13,8 @@ const files = (state = initialState, action) => {
 
     switch (action.type) {
         case LIST_FILES :
-            
-            if(action.files.length > 0) {
+
+            if(action.files && action.files.length > 0) {
                 return {
                    ...state,
                    "files":{

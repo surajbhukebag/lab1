@@ -6,8 +6,6 @@ export const FILE_UPLOAD = 'FILE_UPLOAD';
 
 export function listfiles(dir, email) {
 
-	console.log("list " + dir);
-	console.log("list " + email);
 	let req = {dir:dir, email:email};
 
 	return function(dispatch) {
@@ -32,6 +30,19 @@ export function fileUpload(data, email) {
 		return  API.fileupload(data)
 			    	.then((resData) => {
 				        dispatch(listfiles("/",email)); 
+	      		});
+	  	};
+}
+
+
+export function createFolder(data) {
+	console.log("email "+data.email);
+	let req = {email:data.email, path:data.path, folderName:data.foldername};
+
+	return function(dispatch) {
+		return  API.createFolder(req)
+			    	.then((resData) => {
+				        dispatch(listfiles(data.path, data.email)); 
 	      		});
 	  	};
 }

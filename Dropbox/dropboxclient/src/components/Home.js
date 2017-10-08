@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Route, withRouter } from 'react-router-dom';
+import {connect} from 'react-redux';
 import { Modal, Button } from 'react-bootstrap';
 import HomeLeftNav from './HomeLeftNav';
 import HomeMain from './HomeMain';
@@ -9,8 +10,10 @@ class Home extends Component {
 
 	render() {
 		return(
+     <div>
+       {this.props.isLoggedIn ?
 
-			<div className="container-fluid">
+        <div className="container-fluid">
                
         <div className="row">
           <div className="col-md-2"><HomeLeftNav /></div>
@@ -20,9 +23,20 @@ class Home extends Component {
 
       </div>
 
+       : this.props.history.push("/")}
+			
+       </div>
 			)
 	}
 
 }
 
-export default withRouter(Home);
+function mapStateToProps(user) {
+  if(user.user != null) {
+      const isLoggedIn = user.user.user.loggedin;
+      return {isLoggedIn};
+  }
+    
+}
+
+export default withRouter(connect(mapStateToProps, null)(Home));

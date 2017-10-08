@@ -2,8 +2,11 @@ import React from 'react';
 import { Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
+import {listfiles} from "../actions/files";
+import { Route, withRouter, Link } from 'react-router-dom';
+import {connect} from 'react-redux';
 
-export default class HomeLeftNav extends React.Component {
+class HomeLeftNav extends React.Component {
 
   render() {
     return (
@@ -11,19 +14,45 @@ export default class HomeLeftNav extends React.Component {
         <div><img  src={logo} alt="fireSpot"/></div><br/><br/>
         <Nav vertical>
           <NavItem>
-            <NavLink href="home">Home</NavLink>
+            <Link to="/home">Home</Link>
           </NavItem>
           <NavItem>
-            <NavLink href="files">Files</NavLink>
+            <br/>
           </NavItem>
           <NavItem>
-            <NavLink href="#">Sharing</NavLink>
+            <Link to="/files" onClick={() => {this.props.getListfiles("/", this.props.email)}}>Files</Link>
           </NavItem>
           <NavItem>
-            <NavLink href="#">Group</NavLink>
+            <br/>
+          </NavItem>
+          <NavItem>
+            <Link to="#">Sharing</Link>
+          </NavItem>
+          <NavItem>
+            <br/>
+          </NavItem>
+          <NavItem>
+            <Link to="/files">Group</Link>
           </NavItem>
         </Nav>       
       </div>
     );
   }
 }
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getListfiles : (data, email) => dispatch(listfiles(data, email))
+    };
+}
+
+function mapStateToProps(user) {
+  if(user.user.user.basic != null) {
+      const email = user.user.user.basic.email;
+      return {email};
+  }
+    
+}
+
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps) (HomeLeftNav));

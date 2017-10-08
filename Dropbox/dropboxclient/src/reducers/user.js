@@ -18,7 +18,6 @@ const user = (state = initialState, action) => {
                 return {
                    ...state,
                    "user":{
-                            "basic": {"fname":action.user.fname, "lanme":action.user.lname, "email":action.user.email},
                             "signupmsg" : "Sign Up sucessful. Please Login."
                         }
                 };

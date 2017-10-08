@@ -1,9 +1,13 @@
 import React from 'react';
-import { Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+import {connect} from 'react-redux';
+import { Route, withRouter } from 'react-router-dom';
+import { Input, Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import logo from './../images/user.png';
+import { Link } from 'react-router-dom';
+import {fileUpload} from "../actions/files";
 
-export default class HomeRightNav extends React.Component {
+class HomeRightNav extends React.Component {
 
   constructor(props) {
     super(props);
@@ -21,6 +25,15 @@ export default class HomeRightNav extends React.Component {
     });
   }
 
+  
+  handleFileUpload = (event) => {
+      const data = new FormData();
+      data.append('file', event.target.files[0]);
+      data.append('name', this.props.email);
+      this.props.upload(data, this.props.email);
+  }
+
+
   render() {
     return (
       <div className="pt-5">       
@@ -32,7 +45,7 @@ export default class HomeRightNav extends React.Component {
               <DropdownMenu>
                 <DropdownItem>Suraj Bhukebag</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem><a href="settings">Settings</a></DropdownItem>
+                <DropdownItem><Link to="/settings">Settings</Link></DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem>Sign Out </DropdownItem>
               </DropdownMenu>
@@ -43,10 +56,12 @@ export default class HomeRightNav extends React.Component {
           <div className="row">
              <Nav vertical>
               <NavItem>
-                 <Button color="primary">Upload Files</Button>{' '}
+                <label className="btn-bs-file btn btn-xs btn-primary">
+                  Upload<input type="file" hidden  onChange={this.handleFileUpload} />
+               </label>
               </NavItem>
                <NavItem>
-                <NavLink href="#">New Folder</NavLink>
+                <NavLink href="#"> New Folder</NavLink>
               </NavItem>
               <NavItem>
                 <NavLink href="#">New Shared File</NavLink>
@@ -60,3 +75,19 @@ export default class HomeRightNav extends React.Component {
     );
   }
 }
+
+function mapDispatchToProps(dispatch) {
+    return {
+        upload : (data, email) => dispatch(fileUpload(data, email))
+    };
+}
+
+function mapStateToProps(user) {
+  if(user.user.user.basic != null) {
+      const email = user.user.user.basic.email;
+      return {email};
+  }
+    
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps) (HomeRightNav));

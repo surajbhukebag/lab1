@@ -1,10 +1,11 @@
 import React from 'react';
 import { Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+import { Route, withRouter } from 'react-router-dom';
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
 import Sigin from './Signin'
 
-export default class NavHeader extends React.Component {
+class NavHeader extends React.Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
@@ -42,3 +43,5 @@ export default class NavHeader extends React.Component {
     );
   }
 }
+
+export default withRouter(NavHeader);

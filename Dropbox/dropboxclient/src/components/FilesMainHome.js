@@ -1,10 +1,12 @@
 import React from 'react';
-import { Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+import { Alert, Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
 import Item from './Item';
+import { Route, withRouter } from 'react-router-dom';
+import {connect} from 'react-redux';
 
-export default class FilesMainHome extends React.Component {
+class FilesMainHome extends React.Component {
 
   render() {
     return (
@@ -13,13 +15,32 @@ export default class FilesMainHome extends React.Component {
        <br/>
        
        <hr/>
-       <Item type="file"/>
-       <Item type="folder"/>
-       <Item type="file"/>
-        <Item type="file"/>
-        <Item type="file"/>
+       {
+          this.props.fileList.length > 0 ?
+          this.props.fileList.map((file) => {
+          
+            return(
+                   <Item file={file}/>
+              );
+          
+          }) : <div><Alert color="danger">No Files available</Alert> </div>       
+       }
+
+                         
+       
        <br/>
       </div>
     );
   }
 }
+
+
+function mapStateToProps(files) {
+  if(files.files != null) {
+      const fileList = files.files.files.files;
+      return {fileList};
+  }
+    
+}
+
+export default withRouter(connect(mapStateToProps, null) (FilesMainHome));

@@ -32,8 +32,7 @@ class NewFolder extends React.Component {
   handleFileUpload = (event) => {
       
       this.state.email = this.props.email;
-      this.state.path = "/";
-      console.log(this.props.email);
+      this.state.path = this.props.pwd;
       this.props.createFolder(this.state);
   }
 
@@ -45,7 +44,9 @@ class NewFolder extends React.Component {
 
     return (
       <div>
-        <Button outline color="secondary" onClick={this.toggle}>{this.props.buttonLabel}</Button>
+        <br/>
+        <a onClick={this.toggle}>{this.props.buttonLabel}</a>
+            
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader>Create Folder</ModalHeader>
           <ModalBody>
@@ -79,7 +80,11 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(user) {
   if(user.user.user.basic != null) {
       const email = user.user.user.basic.email;
-      return {email};
+      let pwd = "/";
+      if(user.files.files != null ) {
+        pwd = user.files.files.pwd;
+      }
+      return {email, pwd};
   }
     
 }

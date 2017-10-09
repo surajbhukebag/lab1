@@ -28,10 +28,7 @@ export const fileupload = (payload) =>
     fetch(`${api}/fileupload`, {
         method: 'POST',
         credentials:'include',
-        body: payload,
-        contentType: false,
-        processData: false
-        
+        body: payload        
     }).then((response) => response.json())
 
     .then((responseJson) => {
@@ -58,5 +55,25 @@ export const createFolder = (payload) =>
     })
         .catch(error => {
             console.log("Create Dir failed");
+            return error;
+    });
+
+
+export const fileDelete = (payload) =>  
+    fetch(`${api}/fileFolderDelete`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("File Deletion failed");
             return error;
     });

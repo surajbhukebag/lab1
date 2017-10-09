@@ -1,4 +1,5 @@
 import {LIST_FILES} from "../actions/files";
+import {USER_SIGNOUT} from "../actions/useractions";
 
 const initialState = {
        
@@ -18,7 +19,8 @@ const files = (state = initialState, action) => {
                 return {
                    ...state,
                    "files":{
-                        "files" : action.files
+                        "files" : action.files,
+                        "pwd" : action.pwd
                     }
                 };
 
@@ -29,6 +31,7 @@ const files = (state = initialState, action) => {
                    ...state,                  
                     "files":{
                         "files" :[],
+                        "pwd" : action.pwd,
                         "msg" :"No files available"
                     }
                 };
@@ -36,7 +39,21 @@ const files = (state = initialState, action) => {
             }
 
             break;   
+         case USER_SIGNOUT :
+                if(action.loggedOut) {
 
+                    return {                       
+                       "files":{"files":{}, "pwd" :"/"}           
+                    };
+
+                }
+                else {
+                    return {
+                        ...state
+                    }
+                }               
+
+                break;  
         
         default :
             return state;

@@ -66,12 +66,10 @@ const user = (state = initialState, action) => {
          case USER_SIGNOUT :
                 if(action.loggedOut) {
 
-                    return {
-                       ...state,
+                    return {                       
                        "user":{
                                 "loggedin" : false                                
-                            }
-                       
+                            }                
                     };
 
                 }

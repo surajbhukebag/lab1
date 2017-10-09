@@ -2,6 +2,7 @@ var fs = require('fs');
 
 function listdir(req,res)
 {
+
 	var response = "";
 	let isRoot = true;
 	let dir = "/"+req.param('dir');
@@ -15,13 +16,14 @@ function listdir(req,res)
 
 	fs.readdir(testFolder, function (err, files) 
 	{
+		console.log("lsk");
 		res.contentType('application/json');
 		if(!err) {
 			var result = [];
 			for(var i=0;i<files.length;i++)
 			{
 				let filePath = testFolder+"/"+files[i];
-				
+			
 				var stats = fs.statSync(filePath);
 				if(isRoot) {
 					result.push({path: "/"+files[i], isDirectory: stats.isDirectory(), name:files[i]});
@@ -34,6 +36,7 @@ function listdir(req,res)
 			}
 			
 			let responseJson = {code:200, files:result}
+			console.log(responseJson);
 			res.send(JSON.stringify(responseJson));			
 
 		}

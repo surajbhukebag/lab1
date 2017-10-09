@@ -1,7 +1,7 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import rootReducer from '../reducers/index';
 import thunk from 'redux-thunk';
-import { persistStore } from 'redux-persist'
+import {autoRehydrate} from 'redux-persist'
 import { asyncSessionStorage } from 'redux-persist/storages'
 
 export default function configureStore(initialState){
@@ -10,10 +10,10 @@ export default function configureStore(initialState){
 		 initialState,
 		 compose(
 		   applyMiddleware(thunk),
+		   autoRehydrate(),
 		   window.devToolsExtension ? window.devToolsExtension() : f => f
 		 )
 		);
-	persistStore(store, {storage: asyncSessionStorage});
 
 	return store;
 }

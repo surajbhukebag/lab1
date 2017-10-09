@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Route, withRouter } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import {connect} from 'react-redux';
 import HomeLeftNav from './HomeLeftNav';
 import FilesMainHome from './FilesMainHome';
 import HomeRightNav from './HomeRightNav';
@@ -9,7 +10,8 @@ class FilesHome extends Component {
 
 	render() {
 		return(
-
+      <div>
+       {this.props.isLoggedIn ?
 			<div className="container-fluid">
                
         <div className="row">
@@ -19,10 +21,19 @@ class FilesHome extends Component {
         </div>
 
       </div>
-
+       : this.props.history.push("/")}
+       </div>
 			)
 	}
 
 }
 
-export default withRouter(FilesHome);
+function mapStateToProps(user) {
+  if(user.user != null) {
+      const isLoggedIn = user.user.user.loggedin;
+      return {isLoggedIn};
+  }
+    
+}
+
+export default withRouter(connect(mapStateToProps, null)(FilesHome));

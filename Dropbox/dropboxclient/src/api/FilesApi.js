@@ -11,6 +11,7 @@ export const listdir = (payload) =>
             ...headers,
             'Content-Type': 'application/json'
         },
+        credentials:'include',
         body: JSON.stringify(payload)
     }).then((response) => response.json())
 
@@ -26,6 +27,7 @@ export const listdir = (payload) =>
 export const fileupload = (payload) =>  
     fetch(`${api}/fileupload`, {
         method: 'POST',
+        credentials:'include',
         body: payload,
         contentType: false,
         processData: false
@@ -47,6 +49,7 @@ export const createFolder = (payload) =>
             ...headers,
             'Content-Type': 'application/json'
         },
+        credentials:'include',
         body: JSON.stringify(payload)
     }).then((response) => response.json())
 

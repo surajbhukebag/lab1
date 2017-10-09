@@ -6,6 +6,7 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap
 import logo from './../images/user.png';
 import { Link } from 'react-router-dom';
 import {fileUpload} from "../actions/files";
+import {signout} from "../actions/useractions";
 import NewFolder from "./NewFolder";
 
 class HomeRightNav extends React.Component {
@@ -35,7 +36,18 @@ class HomeRightNav extends React.Component {
   }
 
 
+  navigate() {
+    this.props.history.push('/');
+  }
+
+  navigateSettings() {
+    this.props.history.push('/settings');
+  }
+
   render() {
+    if(!this.props.loggedin) {
+      this.navigate();
+    }
     return (
       <div className="pt-5">       
           <div className="row">
@@ -44,11 +56,11 @@ class HomeRightNav extends React.Component {
                 <img  src={logo} alt="fireSpot"/>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem>Suraj Bhukebag</DropdownItem>
+                <DropdownItem>{this.props.fname}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem><Link to="/settings">Settings</Link></DropdownItem>
+                <DropdownItem><a onClick={() => {this.navigateSettings()}}>Settings</a></DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem>Sign Out </DropdownItem>
+                <DropdownItem><a onClick={() => {this.props.signout()}}>Sign Out</a> </DropdownItem>
               </DropdownMenu>
             </Dropdown>
 
@@ -79,14 +91,17 @@ class HomeRightNav extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        upload : (data, email) => dispatch(fileUpload(data, email))
+        upload : (data, email) => dispatch(fileUpload(data, email)),
+        signout : () => dispatch(signout())
     };
 }
 
 function mapStateToProps(user) {
   if(user.user.user.basic != null) {
       const email = user.user.user.basic.email;
-      return {email};
+      const fname = user.user.user.basic.fname;
+      const loggedin = user.user.user.loggedin
+      return {email, fname, loggedin};
   }
     
 }

@@ -1,4 +1,4 @@
-import {USER_SIGNUP, USER_SIGNIN} from "../actions/useractions";
+import {USER_SIGNUP, USER_SIGNIN, USER_SIGNOUT, USER_PINFO, USER_EDUINFO} from "../actions/useractions";
 
 const initialState = {
        
@@ -60,7 +60,71 @@ const user = (state = initialState, action) => {
 
                 }
 
-                break;      
+                break;    
+
+
+         case USER_SIGNOUT :
+                if(action.loggedOut) {
+
+                    return {
+                       ...state,
+                       "user":{
+                                "loggedin" : false                                
+                            }
+                       
+                    };
+
+                }
+                else {
+                    return {
+                        ...state
+                    }
+                }               
+
+                break;     
+
+         case USER_PINFO :
+                if(action.pinfo) {
+
+                    return {
+                       ...state,
+                       "user":{
+                                "basic":state.user.basic,
+                                "loggedin":state.user.loggedin,
+                                "eduinfo" : state.user.eduinfo,
+                                "pinfo": {"pinfo":action.pinfo, "msg":"User Info Updated"}
+                            }
+                    };
+
+                }
+                else {
+                    return {
+                        ...state
+                    }
+                }               
+
+                break;
+         case USER_EDUINFO :
+                if(action.eduinfo) {
+
+                    return {
+                       ...state,
+                       "user":{
+                                "basic":state.user.basic,
+                                "loggedin":state.user.loggedin,
+                                "pinfo": state.user.pinfo,
+                                "eduinfo" : {"eduinfo":action.eduinfo, "msg":"User Education Info Updated"}
+                            }
+                    };
+
+                }
+                else {
+                    return {
+                        ...state
+                    }
+                }               
+
+                break;
        
         default :
             return state;

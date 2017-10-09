@@ -4,6 +4,8 @@ import { TabContent, TabPane, Card, CardTitle, CardText, Row, Col } from 'reacts
 import classnames from 'classnames';
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
+import UserPersonalInfo from './UserPersonalInfo';
+import UserEducation from './UserEducation';
 import Item from './Item';
 
 export default class UserSettingsHome extends React.Component {
@@ -28,7 +30,7 @@ export default class UserSettingsHome extends React.Component {
   render() {
     return (
       <div className="pt-5">       
-       <p className="text-left">Personal Account</p> 
+       <p className="text-left">User Settings</p> 
         <div>
         <Nav tabs>
           <NavItem>
@@ -36,7 +38,7 @@ export default class UserSettingsHome extends React.Component {
               className={classnames({ active: this.state.activeTab === '1' })}
               onClick={() => { this.toggle('1'); }}
             >
-              Tab1
+              Personal Info
             </NavLink>
           </NavItem>
           <NavItem>
@@ -44,7 +46,7 @@ export default class UserSettingsHome extends React.Component {
               className={classnames({ active: this.state.activeTab === '2' })}
               onClick={() => { this.toggle('2'); }}
             >
-              Moar Tabs
+              Education
             </NavLink>
           </NavItem>
 
@@ -53,7 +55,7 @@ export default class UserSettingsHome extends React.Component {
               className={classnames({ active: this.state.activeTab === '3' })}
               onClick={() => { this.toggle('3'); }}
             >
-              Moar Tabs 3
+              User Interests
             </NavLink>
           </NavItem>
 
@@ -62,7 +64,7 @@ export default class UserSettingsHome extends React.Component {
               className={classnames({ active: this.state.activeTab === '4' })}
               onClick={() => { this.toggle('4'); }}
             >
-              Moar Tabs 4
+              Life Events
             </NavLink>
           </NavItem>
         </Nav>
@@ -70,28 +72,16 @@ export default class UserSettingsHome extends React.Component {
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
-                <h4>Tab 1 Contents</h4>
+                <br />
+                <UserPersonalInfo />
               </Col>
             </Row>
           </TabPane>
           <TabPane tabId="2">
             <Row>
-              <Col sm="4">
-                <Card body>
-                  <CardTitle>Special Title Treatment 1</CardTitle>
-                  <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col sm="4">
-                <Card body>
-                  <CardTitle>Special Title Treatment 1</CardTitle>
-                  <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
+              <Col sm="12">
+                <br />
+                <UserEducation />
               </Col>
             </Row>
           </TabPane>

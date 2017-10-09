@@ -11,6 +11,7 @@ export const signup = (payload) =>
             ...headers,
             'Content-Type': 'application/json'
         },
+        credentials:'include',
         body: JSON.stringify(payload)
     }).then((response) => response.json())
 
@@ -30,6 +31,7 @@ export const signin = (payload) =>
             ...headers,
             'Content-Type': 'application/json'
         },
+        credentials:'include',
         body: JSON.stringify(payload)
     }).then((response) => response.json())
 
@@ -38,5 +40,63 @@ export const signin = (payload) =>
     })
         .catch(error => {
             console.log("Sign in Falied with error : "+error);
+            return error;
+});
+
+export const signout = () =>  
+    fetch(`${api}/signout`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include'
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Sign in Falied with error : "+error);
+            return error;
+});
+
+
+export const userPersonalInfo = (payload) =>  
+    fetch(`${api}/userPersonalInfo`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Updating user Personal info failed with error : "+error);
+            return error;
+});
+
+
+export const userEduInfo = (payload) =>  
+    fetch(`${api}/userEduInfo`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Updating user Education info failed with error : "+error);
             return error;
 });

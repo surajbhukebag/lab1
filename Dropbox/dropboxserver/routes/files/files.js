@@ -1,11 +1,13 @@
 var fs = require('fs');
+var rmrf = require('rimraf');
 
 function listdir(req,res)
 {
 
 	var response = "";
 	let isRoot = true;
-	let dir = "/"+req.param('dir');
+	console.log("dir : "+req.param('dir'));
+	let dir = req.param('dir');
 	if(req.param('dir') != '/') {
 		testFolder = "files/"+req.param('email')+dir;
 		isRoot = false;	
@@ -16,7 +18,7 @@ function listdir(req,res)
 
 	fs.readdir(testFolder, function (err, files) 
 	{
-		console.log("lsk");
+		
 		res.contentType('application/json');
 		if(!err) {
 			var result = [];
@@ -36,7 +38,6 @@ function listdir(req,res)
 			}
 			
 			let responseJson = {code:200, files:result}
-			console.log(responseJson);
 			res.send(JSON.stringify(responseJson));			
 
 		}
@@ -51,7 +52,7 @@ function createFolder(req,res)
 {
 	res.contentType('application/json');
 
-	fs.mkdir("./files/" + req.body.email+"/"+req.body.folderName, function(err) {
+	fs.mkdir("./files/" + req.body.email+req.body.path+"/"+req.body.folderName, function(err) {
 		if (!err) {
 			let responseJson = {code:200, msg:"New folder with name "+req.body.folderName+" created"};
 			res.send(JSON.stringify(responseJson));	
@@ -63,6 +64,41 @@ function createFolder(req,res)
 
 }
 
+function fileFolderDelete(req,res)
+{
+	res.contentType('application/json');
+
+		let path = req.param("path");
+		let email = req.param("email");
+		let isDirectory = req.param("isDirectory");
+
+		if(isDirectory) {
+
+			rmrf("./files/" + email+"/"+path, function(err) {
+				if (err) {
+					console.log(err);
+					res.send(JSON.stringify({code:500, msg:"Folder Deletion failed"}));
+
+				} else {
+					res.send(JSON.stringify({code:200, msg:"Folder Deletion successful"}));
+				}
+			});
+
+		}
+		else {
+
+			fs.unlink("./files/" + email+"/"+path, function(err) {
+			    if (err) {
+			    	res.send(JSON.stringify({code:500, msg:"File deletion failed"}));
+			    }
+			    else {
+					res.send(JSON.stringify({code:200, msg:"File/Folder Deletion successful"}));	
+			    }
+			});
+
+		}
+}
 
 exports.listdir = listdir;
 exports.createFolder = createFolder;
+exports.fileFolderDelete = fileFolderDelete;

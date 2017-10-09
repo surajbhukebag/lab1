@@ -10,7 +10,7 @@ var express = require('express')
   ,	cors = require('cors')
   , bodyParser = require('body-parser')
   , user = require('./routes/user/user')
-  , files = require('./routes/files/listdir')
+  , files = require('./routes/files/files')
   , fileupload = require('./routes/files/upload')
   , session = require('client-sessions');
 
@@ -64,6 +64,7 @@ app.post('/userEduInfo', cors(corsOptions), user.userEduInfo);
 
 app.post('/listdir',cors(corsOptions), files.listdir);
 app.post('/fileupload',cors(corsOptions), fileupload.uploadfile);
+app.post('/fileFolderDelete',cors(corsOptions), files.fileFolderDelete);
 app.post('/createFolder',cors(corsOptions), files.createFolder);
 
 http.createServer(app).listen(app.get('port'), function(){

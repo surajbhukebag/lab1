@@ -38,5 +38,74 @@ function getStarredFiles(callback, starredFilesQuery, createdBy){
 
 }
 
+
+function getUserFile(callback, userFilesQuery, createdBy, name, path){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(userFilesQuery, [createdBy, name, path], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{								
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+function generateLink(callback, generateLinkQuery, fileId){
+	
+	var connection=mysql.getConnection();
+
+	require('crypto').randomBytes(20, function(err, buffer) {
+		var token = buffer.toString('hex');
+
+		connection.query(generateLinkQuery, [token, fileId], function(err, result) {
+			if(err){
+				console.log(err);
+				callback(null, err);
+			}
+			else 
+			{								
+				callback(token, err);						
+			}
+		});
+		console.log("\nConnection closed..");
+		connection.end();
+
+	});
+	
+
+}
+
+
+function getFileLink(callback, checkLinkQuery, fileId){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(checkLinkQuery, fileId, function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{								
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+
 exports.storeFileDetails = storeFileDetails;
 exports.getStarredFiles = getStarredFiles;
+exports.getUserFile = getUserFile;
+exports.generateLink = generateLink;
+exports.getFileLink = getFileLink;

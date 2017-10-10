@@ -184,7 +184,77 @@ function starredFiles(req, res) {
 
 }
 
+function generateLink(req, res) {
+
+
+		let email = req.param("email");
+		let p = req.param("path");
+		let index = p.lastIndexOf("/");
+		let path = "";
+		if(index === 0) {
+			path = "/";
+		}
+		else {
+			path = p.substring(0, index);
+		}
+		let name = p.substring(index+1);
+
+		let getUserQuery = "select * from user where email = ?";
+		usermysql.getUser(function(uniqueUsername, err, result) {
+			if(!err) {
+
+				let userFilesQuery = "select * from files where createdBy = ? and name = ? and path = ?";
+				console.log("name : "+name);
+				console.log("path : "+path);
+				mysql.getUserFile(function(r, err) {
+					if(!err) {
+						let checkLinkQuery = "select * from filelink where fileId = ?";
+						mysql.getFileLink(function(rs, err) {
+
+							if(!err) {
+								if(rs.length > 0) {
+									let responseJson = {code:200, link:"http://localhost:3001/downloadFile/"+rs[0].linkString};
+									res.send(JSON.stringify(responseJson));
+								}
+								else {
+										let generateLinkQuery = "insert into filelink(linkString, fileId) values (?,?)";
+										mysql.generateLink(function(token, err) {
+
+											if(!err) {
+												let responseJson = {code:200, link:"http://localhost:3001/downloadFile/"+token};
+												res.send(JSON.stringify(responseJson));
+											}
+											else {
+												res.send(JSON.stringify({code:500, msg:"Unable to Generate Link."}));
+											}
+
+										}, generateLinkQuery, r[0].id);
+								}
+							}
+							else {
+
+							}
+						}, checkLinkQuery, r[0].id);
+						
+					}
+					else {
+						res.send(JSON.stringify({code:500, msg:"Unable to fetch starred files."}));
+					}
+
+				}, userFilesQuery, result[0].id, name, path);			
+			}
+			else {
+				res.send(JSON.stringify({code:500, msg:"Link Generation failed"}));
+			}
+
+		}, getUserQuery,email);
+
+	
+
+}
+
 exports.listdir = listdir;
 exports.createFolder = createFolder;
 exports.fileFolderDelete = fileFolderDelete;
 exports.starredFiles = starredFiles;
+exports.generateLink = generateLink;

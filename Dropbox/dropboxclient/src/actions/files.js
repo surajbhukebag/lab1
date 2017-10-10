@@ -1,27 +1,44 @@
 import * as API from '../api/FilesApi';
-
+import {USER_SIGNOUT} from './useractions';
 export const LIST_FILES = 'LIST_FILES';
 export const FILE_UPLOAD = 'FILE_UPLOAD';
 export const FILE_DELETE = 'FILE_DELETE';
 
 
-export function listfiles(dir, email) {
+export function listfiles(dir, email, msg) {
 
 	let req = {dir:dir, email:email};
 
 	return function(dispatch) {
 		return  API.listdir(req)
 			    	.then((resData) => {
-				        dispatch(updateListFiles(resData, dir)); 
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+			    			dispatch(updateListFiles(resData, dir, msg)); 	
+			    		}
+				        
 	      		});
 	  	};
 }
 
-export function updateListFiles(resData, dir) {
+function invalidSession() {
+
+		return {
+			type: USER_SIGNOUT,
+			loggedOut: true
+		}
+
+}
+
+export function updateListFiles(resData, dir, msg) {
+
 	return {
 		type: LIST_FILES,
 		files : resData.files,
-		pwd : dir
+		pwd : dir,
+		msg : msg
 	}
 	
 }
@@ -31,7 +48,12 @@ export function fileUpload(data, email, pwd) {
 	return function(dispatch) {
 		return  API.fileupload(data)
 			    	.then((resData) => {
-				        dispatch(listfiles(pwd,email)); 
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(listfiles(pwd,email, "File Uploaded Successfully")); 
+				    	}
 	      		});
 	  	};
 }
@@ -44,7 +66,12 @@ export function createFolder(data) {
 	return function(dispatch) {
 		return  API.createFolder(req)
 			    	.then((resData) => {
-				        dispatch(listfiles(data.path, data.email)); 
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(listfiles(data.path, data.email, "Folder created successfully")); 
+				    	}
 	      		});
 	  	};
 }
@@ -54,7 +81,12 @@ export function fileDelete(file, email, pwd) {
 	return function(dispatch) {
 		return  API.fileDelete(req)
 			    	.then((resData) => {
-				        dispatch(listfiles(pwd,email)); 
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(listfiles(pwd,email, "Deletion Successfull")); 
+				    	}
 	      		});
 	  	};
 

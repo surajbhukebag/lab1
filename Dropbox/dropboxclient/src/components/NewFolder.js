@@ -16,6 +16,7 @@ class NewFolder extends React.Component {
     };
 
     this.toggle = this.toggle.bind(this);
+    this.handleCreateFolder = this.handleCreateFolder.bind(this);
   }
 
   toggle() {
@@ -24,23 +25,17 @@ class NewFolder extends React.Component {
     });
   }
 
-  navigate() {
-    this.props.history.push('/home');
-  }
 
-  
-  handleFileUpload = (event) => {
+  handleCreateFolder() {
       
       this.state.email = this.props.email;
       this.state.path = this.props.pwd;
       this.props.createFolder(this.state);
+      this.toggle();
+
   }
 
   render() {
-
-    if(this.props.isLoggedIn){
-      this.navigate();
-    }
 
     return (
       <div>
@@ -62,7 +57,7 @@ class NewFolder extends React.Component {
             </Form>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.handleFileUpload} >Create Folder</Button>{' '}
+            <Button color="primary" onClick={() => {this.handleCreateFolder()}} >Create Folder</Button>{' '}
             <Button color="secondary" onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>

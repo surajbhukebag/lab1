@@ -13,7 +13,7 @@ class FilesMainHome extends React.Component {
       <div className="pt-5">       
        <p className="text-left">Dropbox</p>
        <br/>
-       
+       {this.props.msg ? <Alert color="info">{this.props.msg}</Alert> :''}
        <hr/>
        {
           this.props.fileList.length > 0 ?
@@ -38,9 +38,12 @@ class FilesMainHome extends React.Component {
 function mapStateToProps(files) {
   if(files.files != null) {
       const fileList = files.files.files.files;
-      return {fileList};
+      const msg = files.files.files.msg;
+      files.files.files.msg = "";
+      return {fileList, msg};
   }
     
 }
+
 
 export default withRouter(connect(mapStateToProps, null) (FilesMainHome));

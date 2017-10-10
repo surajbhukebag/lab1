@@ -86,6 +86,12 @@ export function updateUserData(resData, userDeails) {
 			user: {"fname":userDeails.fname, "lname":userDeails.lname, "email":userDeails.email}
 		}
 	}
+	else if(resData.code === 502) {
+		return {
+			type: USER_SIGNOUT,
+			loggedOut: true
+		}
+	}
 	else {
 		return {
 			type: USER_SIGNUP,
@@ -150,7 +156,12 @@ export function userPersonalInfo(data, email) {
 	return function(dispatch) {
 		return  API.userPersonalInfo(data)
 			    	.then((resData) => {
-				        dispatch(updateUserPersonalData(resData));				          
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(updateUserPersonalData(resData));
+				        }					          
 	      		});
 	};
 }
@@ -164,7 +175,12 @@ export function userEduInfo(data, email) {
 	return function(dispatch) {
 		return  API.userEduInfo(data)
 			    	.then((resData) => {
-				        dispatch(updateUserEduData(resData));				          
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(updateUserEduData(resData));				          
+				    	}
 	      		});
 	};
 	
@@ -198,4 +214,13 @@ function updateUserPersonalData(resData) {
 			pinfo: null
 		}
 	}
+}
+
+function invalidSession() {
+
+		return {
+			type: USER_SIGNOUT,
+			loggedOut: true
+		}
+
 }

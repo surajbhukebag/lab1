@@ -9,6 +9,7 @@ class FileButton extends React.Component {
 
     this.toggle = this.toggle.bind(this);
     this.toggleModle = this.toggleModle.bind(this);
+    this.handleOnclick = this.handleOnclick.bind(this);
     this.state = {
       dropdownOpen: false,
       modal: false
@@ -27,7 +28,13 @@ class FileButton extends React.Component {
     });
   }
 
+  handleOnclick() {
+    this.props.fileDelete(this.props.attr, this.props.email, this.props.pwd);
+    this.toggleModle();
+  }
+
   render() {
+
     return (
       <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         <DropdownToggle>
@@ -44,7 +51,7 @@ class FileButton extends React.Component {
                 Are you sure ?
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" onClick={() => {this.props.fileDelete(this.props.attr, this.props.email, this.props.pwd)}} >Confirm</Button>{' '}
+                <Button color="primary" onClick={() => {this.handleOnclick()}} >Confirm</Button>{' '}
                 <Button color="secondary" onClick={this.toggleModle}>Cancel</Button>
               </ModalFooter>
             </Modal>

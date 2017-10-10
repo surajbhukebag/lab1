@@ -20,7 +20,8 @@ const files = (state = initialState, action) => {
                    ...state,
                    "files":{
                         "files" : action.files,
-                        "pwd" : action.pwd
+                        "pwd" : action.pwd,
+                        "msg" : action.msg
                     }
                 };
 

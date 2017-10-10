@@ -1,11 +1,13 @@
 
 import * as API from '../api/UserApi';
+import * as FAPI from '../api/FilesApi';
 
 export const USER_SIGNUP = 'USER_SIGNUP';
 export const USER_SIGNIN = 'USER_SIGNIN';
 export const USER_SIGNOUT = 'USER_SIGNOUT';
 export const USER_PINFO = 'USER_PINFO';
 export const USER_EDUINFO = 'USER_EDUINFO';
+
 
 
 export function userSignup(userDeails) {
@@ -38,7 +40,25 @@ export function userSignin(userDeails) {
 	   	return function(dispatch) {
 			return  API.signin(userDeails)
 				    	.then((resData) => {
-					        dispatch(updateSigninUserData(resData)); 
+
+				    		if(resData.code === 502) {
+						    			dispatch(invalidSession()); 
+						    }
+						    else {
+					    		FAPI.getStarredFiles(resData.user.email)
+							    	.then((rData) => {
+							    		if(rData.code === 502) {
+							    			dispatch(invalidSession()); 
+							    		}
+							    		else {
+							    			console.log(rData.starred);
+								        	dispatch(updateSigninUserData(resData, rData)); 
+								    	}
+					      		});
+
+						    }
+			
+					         
 		      		});
 		  	};
    }
@@ -53,11 +73,16 @@ export function userSignin(userDeails) {
 }
 
 
-export function updateSigninUserData(resData) {
+export function updateSigninUserData(resData, rData) {
+
+	
 	if(resData.code === 200) {
 		return {
 			type: USER_SIGNIN,
-			user: {"fname":resData.user.fname, "lname":resData.user.lname, "email":resData.user.email}
+			user: {"fname":resData.user.fname, "lname":resData.user.lname, "email":resData.user.email},
+			pinfo: resData.pinfo,
+			eduinfo: resData.eduinfo,
+			starred: rData.starred
 		}
 	}
 	else {

@@ -97,7 +97,7 @@ function mapStateToProps(user) {
       const email = user.user.user.basic.email;
       let edu = "", msg="";
       if(user.user.user.eduinfo) {
-        edu = user.user.user.eduinfo.eduinfo;        
+        edu = user.user.user.eduinfo;        
         var today = new Date(edu.sdate);
         var dd = today.getDate();
         var mm = today.getMonth()+1; //January is 0!

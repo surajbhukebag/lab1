@@ -77,3 +77,22 @@ export const fileDelete = (payload) =>
             console.log("File Deletion failed");
             return error;
     });
+
+
+export const getStarredFiles = (payload) =>  
+    fetch(`${api}/starredFiles/`+payload, {
+        method: 'GET',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include'
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Get starred files failed");
+            return error;
+    });

@@ -52,7 +52,7 @@ export function fileUpload(data, email, pwd) {
 			    			dispatch(invalidSession()); 
 			    		}
 			    		else {
-				        	dispatch(listfiles(pwd,email, "File Uploaded Successfully")); 
+				        	dispatch(listfiles(pwd,email, resData.msg)); 
 				    	}
 	      		});
 	  	};
@@ -70,7 +70,7 @@ export function createFolder(data) {
 			    			dispatch(invalidSession()); 
 			    		}
 			    		else {
-				        	dispatch(listfiles(data.path, data.email, "Folder created successfully")); 
+				        	dispatch(listfiles(data.path, data.email, resData.msg)); 
 				    	}
 	      		});
 	  	};
@@ -85,7 +85,7 @@ export function fileDelete(file, email, pwd) {
 			    			dispatch(invalidSession()); 
 			    		}
 			    		else {
-				        	dispatch(listfiles(pwd,email, "Deletion Successfull")); 
+				        	dispatch(listfiles(pwd,email, resData.msg)); 
 				    	}
 	      		});
 	  	};

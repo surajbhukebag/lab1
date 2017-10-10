@@ -43,7 +43,10 @@ const user = (state = initialState, action) => {
                        ...state,
                        "user":{
                                 "basic": {"fname":action.user.fname, "lanme":action.user.lname, "email":action.user.email},
-                                "loggedin" : true                                
+                                "pinfo" : action.pinfo,
+                                "eduinfo" : action.eduinfo,
+                                "loggedin" : true,
+                                "starred" : action.starred                                
                             }
                     };
 
@@ -90,7 +93,7 @@ const user = (state = initialState, action) => {
                                 "basic":state.user.basic,
                                 "loggedin":state.user.loggedin,
                                 "eduinfo" : state.user.eduinfo,
-                                "pinfo": {"pinfo":action.pinfo, "msg":"User Info Updated"}
+                                "pinfo": action.pinfo
                             }
                     };
 
@@ -111,7 +114,7 @@ const user = (state = initialState, action) => {
                                 "basic":state.user.basic,
                                 "loggedin":state.user.loggedin,
                                 "pinfo": state.user.pinfo,
-                                "eduinfo" : {"eduinfo":action.eduinfo, "msg":"User Education Info Updated"}
+                                "eduinfo" : action.eduinfo
                             }
                     };
 

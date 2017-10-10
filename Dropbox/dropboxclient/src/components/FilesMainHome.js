@@ -23,7 +23,7 @@ class FilesMainHome extends React.Component {
                    <Item file={file}/>
               );
           
-          }) : <div><Alert color="danger">No Files available</Alert> </div>       
+          }) : ''       
        }
 
                          

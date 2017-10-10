@@ -1,10 +1,12 @@
 import React from 'react';
-import { Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+import { Alert, Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
 import Item from './Item';
+import {connect} from 'react-redux';
+import { Route, withRouter } from 'react-router-dom';
 
-export default class HomeMain extends React.Component {
+class HomeMain extends React.Component {
 
   render() {
     return (
@@ -13,20 +15,33 @@ export default class HomeMain extends React.Component {
        <br/>
        <p className="text-left">Starred</p>
        <div><hr/>
-       <Item type="folder"/>
-       <Item type="file"/>
-       <Item type="folder"/>
+       {this.props.starred.length > 0 ?
+        this.props.starred.map((file) => {          
+            return(
+                   <Item file={file}/>
+              );          
+          })
+        :
+        <Alert color="info">No Starred Items</Alert>
+       }
+       
        <br/>
        <p className="text-left">Recent</p>
        <hr/>
-       <Item type="file"/>
-       <Item type="folder"/>
-       <Item type="file"/>
-        <Item type="file"/>
-        <Item type="file"/>
+       
        <br/>
        </div>
       </div>
     );
   }
 }
+
+function mapStateToProps(user) {
+  if(user.user.user.starred != null) {
+      const starred = user.user.user.starred
+      return {starred};
+  }
+    
+}
+
+export default withRouter(connect(mapStateToProps, null) (HomeMain));

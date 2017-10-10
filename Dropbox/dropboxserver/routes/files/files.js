@@ -1,9 +1,15 @@
 var fs = require('fs');
 var rmrf = require('rimraf');
+var mysql = require('./../mysql/fileMysql');
+var usermysql = require('./../mysql/userMysql');
 
 function listdir(req,res)
 {
-
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 	var response = "";
 	let isRoot = true;
 	console.log("dir : "+req.param('dir'));
@@ -19,7 +25,6 @@ function listdir(req,res)
 	fs.readdir(testFolder, function (err, files) 
 	{
 		
-		res.contentType('application/json');
 		if(!err) {
 			var result = [];
 			for(var i=0;i<files.length;i++)
@@ -46,27 +51,60 @@ function listdir(req,res)
 		}
 		
 	});
+	}
 }
 
 function createFolder(req,res)
 {
-	res.contentType('application/json');
+	
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 
 	fs.mkdir("./files/" + req.body.email+req.body.path+"/"+req.body.folderName, function(err) {
 		if (!err) {
-			let responseJson = {code:200, msg:"New folder with name "+req.body.folderName+" created"};
-			res.send(JSON.stringify(responseJson));	
+
+
+			let checkUsernameQuery = "select * from user where email = ?";
+			usermysql.checkUsername(function(uniqueUsername, err, result) {
+				if(!err) {
+					let storeFileQuery = "insert into files (name, path, isDirectory, createdBy, dateCreated, isStarred) values (?,?,?,?,?,?)";
+					mysql.storeFileDetails(function(err) {
+						if(!err) {
+							let responseJson = {code:200, msg:"New folder with name "+req.body.folderName+" created"};
+							res.send(JSON.stringify(responseJson));	
+						}
+						else {
+							res.send(JSON.stringify({code:500, msg:"New folder creation failed"}));
+						}
+
+					}, storeFileQuery, req.body.folderName, req.body.path, 1, result[0].id, new Date().getTime());
+					
+				}
+				else {
+					res.send(JSON.stringify({code:500, msg:"New folder creation failed"}));
+				}
+
+			}, checkUsernameQuery,req);
 
 		} else {
 			res.send(JSON.stringify({code:500, msg:"New folder creation failed"}));
 		}
 	});
+	}
 
 }
 
 function fileFolderDelete(req,res)
 {
-	res.contentType('application/json');
+	
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 
 		let path = req.param("path");
 		let email = req.param("email");
@@ -97,8 +135,44 @@ function fileFolderDelete(req,res)
 			});
 
 		}
+	}
+}
+
+
+function starredFiles(req, res) {
+
+	
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+	let email = req.param("email");
+	let getUserQuery = "select * from user where email = ?";
+	usermysql.getUser(function(uniqueUsername, err, result) {
+		if(!err) {
+			let starredFilesQuery = "select * from files where createdBy = ? and isStarred = ?";
+			mysql.getStarredFiles(function(result, err) {
+				if(!err) {
+					let responseJson = {code:200, msg:"No of files : "+result.length}
+					res.send(JSON.stringify(responseJson));
+				}
+				else {
+					res.send(JSON.stringify({code:500, msg:"Unable to fetch starred files."}));
+				}
+
+			}, starredFilesQuery, result[0].id);			
+		}
+		else {
+			res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
+		}
+
+	}, getUserQuery,email);
+	}
+
 }
 
 exports.listdir = listdir;
 exports.createFolder = createFolder;
 exports.fileFolderDelete = fileFolderDelete;
+exports.starredFiles = starredFiles;

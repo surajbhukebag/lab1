@@ -79,10 +79,16 @@ function signout(req, res) {
 
 function userPersonalInfo(req, res) {
 
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+
 	let getUserId = "select * from user where email = ?";
 	mysql.checkUsername(function(uniqueUsername, err, result) {
 
-		res.setHeader('Content-Type', 'application/json');
+		
 		let uId = result[0].id;
 		if(!err) {
 
@@ -136,16 +142,24 @@ function userPersonalInfo(req, res) {
 		}
 		
 	},getUserId,req);	 
+
+	}
 }
 
 
 
 function userEduInfo(req, res) {
 
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+
+
 	let getUserId = "select * from user where email = ?";
 	mysql.checkUsername(function(uniqueUsername, err, result) {
 
-		res.setHeader('Content-Type', 'application/json');
 		let uId = result[0].id;
 		if(!err) {
 
@@ -200,7 +214,9 @@ function userEduInfo(req, res) {
 			res.send(JSON.stringify({ code: 500, msg:"Unable to access user data.Please try later."}));
 		}
 		
-	},getUserId,req);	 
+	},getUserId,req);	
+
+	} 
 }
 
 

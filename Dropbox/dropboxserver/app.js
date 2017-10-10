@@ -66,6 +66,7 @@ app.post('/listdir',cors(corsOptions), files.listdir);
 app.post('/fileupload',cors(corsOptions), fileupload.uploadfile);
 app.post('/fileFolderDelete',cors(corsOptions), files.fileFolderDelete);
 app.post('/createFolder',cors(corsOptions), files.createFolder);
+app.get('/starredFiles/:email', cors(corsOptions), files.starredFiles);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

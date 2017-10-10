@@ -1,6 +1,8 @@
 var fs = require('fs');
 var multer = require('multer');
 var mv = require('mv');
+var mysql = require('./../mysql/fileMysql');
+var usermysql = require('./../mysql/userMysql');
 
 var storage = multer.diskStorage({
 	destination : function(req, file, callback) {
@@ -19,7 +21,12 @@ var upload = multer({
 
 function uploadfile(req,res){
 
-	res.contentType('application/json');
+	
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 	
 	upload(req, res, function(err) {
 		if (err) {
@@ -34,13 +41,36 @@ function uploadfile(req,res){
 					res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
 				}
 				else {
-					let responseJson = {code:200, msg:"File is uploaded at : " + req.body.name + req.body.path +"/"+ name}
-					res.send(JSON.stringify(responseJson));
+
+						let checkUsernameQuery = "select * from user where email = ?";
+						usermysql.getUser(function(uniqueUsername, err, result) {
+							if(!err) {
+								let storeFileQuery = "insert into files (name, path, isDirectory, createdBy, dateCreated, isStarred) values (?,?,?,?,?,?)";
+								mysql.storeFileDetails(function(err) {
+									if(!err) {
+										let responseJson = {code:200, msg:"File is uploaded at : " + req.body.name + req.body.path +"/"+ name}
+										res.send(JSON.stringify(responseJson));
+									}
+									else {
+										res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
+									}
+
+								}, storeFileQuery, req.files[0].originalname, req.body.path, 0, result[0].id, new Date().getTime());
+								
+							}
+							else {
+								res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
+							}
+
+						}, checkUsernameQuery,req.body.name);
+
+					
 				}				
 
 			});			
 		}
 	});
+	}
 }
 
 

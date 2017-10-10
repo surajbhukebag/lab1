@@ -49,14 +49,40 @@ function signin(req, res) {
 			let enteredPassword = req.param("password");
 			bcrypt.compare(enteredPassword, result[0].password, function(err, isPasswordMatch) {   
 				let code = 500;
-					let user = "";
+					let user = {}, pinfo={}, eduInfo = {} ;
 		       if(isPasswordMatch) {
-		       		code = 200;
-		        	user = {"fname": result[0].firstname,"lname": result[0].lastname,"email": result[0].email};
-		        	req.session.email = result[0].email;
-		       }	       	
-		       
-		       res.send(JSON.stringify({ code: code, loggedIn:isPasswordMatch, user:user}));	       
+
+		       		user = {"fname": result[0].firstname,"lname": result[0].lastname,"email": result[0].email};
+		       		let getPInfoQuery = "select * from personalinfo where userId = ?";
+					mysql.checkPinfo(function(r, err){
+
+						if(err) {
+							res.send(JSON.stringify({ code: 500, msg:"Unable to access user data.Please try later."}));
+						}
+						else {
+							if(r.length > 0) {
+								pinfo = {contact:r[0].contactNumber, dob:r[0].dateOfBirth};
+							}
+
+							let getEduInfoQuery = "select * from education where userId = ?";
+							mysql.checkEduinfo(function(ra, err){
+
+								if(err) {
+									res.send(JSON.stringify({ code: 500, msg:"Unable to access user data.Please try later."}));
+								}
+								else {
+									if(r.length > 0) {
+										eduInfo = {college:ra[0].collegeName, sdate:ra[0].startDate, edate:ra[0].endDate, major:ra[0].major, gpa:ra[0].gpa};
+									}
+									code = 200;		        	
+		        					req.session.email = result[0].email;
+		        					res.send(JSON.stringify({ code: code, loggedIn:isPasswordMatch, user:user, pinfo:pinfo, eduinfo:eduInfo}));
+								}
+							}, getEduInfoQuery, result[0].id);
+
+						}
+					}, getPInfoQuery, result[0].id);		       		
+		       }	              
 		       
 		   	});
 		}
@@ -109,7 +135,7 @@ function userPersonalInfo(req, res) {
 						}
 						else {
 
-							res.send(JSON.stringify({ code: 200, pinfo : {userId:userId, contact : req.param("contact"), dob : req.param("dob")}}));						
+							res.send(JSON.stringify({ code: 200, pinfo : {userId:userId, contact : req.param("contact"), dob : req.param("dob"), msg:"User Personal Data Updated"}}));						
 							
 						}}, userPinfoUpdateQuery, req, uId);
 
@@ -124,7 +150,7 @@ function userPersonalInfo(req, res) {
 						}
 						else {
 
-							res.send(JSON.stringify({ code: 200, pinfo : {userId:userId, contact : req.param("contact"), dob : req.param("dob")}}));						
+							res.send(JSON.stringify({ code: 200, pinfo : {userId:userId, contact : req.param("contact"), dob : req.param("dob"), msg:"User Personal Data Updated"}}));						
 							
 						}}, userPinfoQuery, req, uId);
 
@@ -181,7 +207,7 @@ function userEduInfo(req, res) {
 						}
 						else {
 
-							res.send(JSON.stringify({ code: 200, eduinfo : {userId:userId, college: req.param("college"), major: req.param("major"), sdate: req.param("sdate"), edate: req.param("edate"), gpa: req.param("gpa")}}));						
+							res.send(JSON.stringify({ code: 200, eduinfo : {userId:userId, college: req.param("college"), major: req.param("major"), sdate: req.param("sdate"), edate: req.param("edate"), gpa: req.param("gpa"), msg:"User Education Data Updated"}}));						
 							
 						}}, userEduInfoUpdateQuery, req, uId);
 
@@ -197,7 +223,7 @@ function userEduInfo(req, res) {
 						else {
 
 							res.send(JSON.stringify({ code: 200, eduinfo : {userId:userId, college: req.param("college"), major: req.param("major"), 
-								sdate: req.param("sdate"), edate: req.param("edate"), gpa: req.param("gpa")}}));						
+								sdate: req.param("sdate"), edate: req.param("edate"), gpa: req.param("gpa"), msg:"User Education Data Updated"}}));						
 							
 						}}, userEduinfoQuery, req, uId);
 

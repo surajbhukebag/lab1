@@ -71,9 +71,9 @@ function createFolder(req,res)
 			usermysql.checkUsername(function(uniqueUsername, err, result) {
 				if(!err) {
 					let storeFileQuery = "insert into files (name, path, isDirectory, createdBy, dateCreated, isStarred) values (?,?,?,?,?,?)";
-					mysql.storeFileDetails(function(err) {
+					mysql.storeFileDetails(function(r, err, uId) {
 						if(!err) {
-							let responseJson = {code:200, msg:"New folder with name "+req.body.folderName+" created"};
+							let responseJson = {code:200, msg:"New folder created"};
 							res.send(JSON.stringify(responseJson));	
 						}
 						else {
@@ -130,7 +130,7 @@ function fileFolderDelete(req,res)
 			    	res.send(JSON.stringify({code:500, msg:"File deletion failed"}));
 			    }
 			    else {
-					res.send(JSON.stringify({code:200, msg:"File/Folder Deletion successful"}));	
+					res.send(JSON.stringify({code:200, msg:"File Deletion successful"}));	
 			    }
 			});
 
@@ -154,7 +154,19 @@ function starredFiles(req, res) {
 			let starredFilesQuery = "select * from files where createdBy = ? and isStarred = ?";
 			mysql.getStarredFiles(function(result, err) {
 				if(!err) {
-					let responseJson = {code:200, msg:"No of files : "+result.length}
+					let re = [];
+					for(var i = 0; i < result.length; i++) {
+						let p = "";
+						if(result[i].path === "/") {
+							p = result[i].path+result[i].name
+						}
+						else {
+							p = result[i].path+"/"+result[i].name	
+						}
+
+						re.push({path:p , isDirectory: result[i].isDirectory, name:result[i].name});
+					}
+					let responseJson = {code:200, starred:re};
 					res.send(JSON.stringify(responseJson));
 				}
 				else {

@@ -26,7 +26,7 @@ class FileButton extends React.Component {
   }
 
   toggleShareModle() {
-    this.setState({
+        this.setState({
       shareModal: !this.state.shareModal
     });
   }
@@ -57,16 +57,24 @@ class FileButton extends React.Component {
               <ModalBody>
                   <div className="container-fluid">
                   {this.props.attr.isDirectory ? ''  :
-                          <div className="row">
-                    <div className="col-md-4"><Button color="primary" onClick={() => {this.props.generateLink(this.props.attr,this.props.email)}}>Generate Link</Button></div>
-                    <div className="col-md-8"><Input type="textarea" readOnly name="link" placeholder={this.props.link} /></div>
-                  </div>
+                  <div>
+                    <div className="row">
+                      <div className="col-md-4"><Button color="primary" onClick={() => {this.props.generateLink(this.props.attr,this.props.email)}}>Generate Link</Button></div>         
+                    </div>
+                    <br />
+                    <div className="row">
+                      <div className="col-md-12"><Input type="textarea" readOnly name="link" placeholder={this.props.link} /></div>
+                    </div>
+                    </div>
                 }
            
                  <br/>
                  <div className="row">
-                  <div className="col-md-4"><Button color="primary">Share By Email</Button></div>
-                  <div className="col-md-8"><Input type="text" name="emails" placeholder="Enter Email" /></div>
+                  <div className="col-md-4"><Button color="primary">Share By Email or Name</Button></div>
+                  </div>
+                  <br/>
+                 <div className="row">
+                    <div className="col-md-12"><Input type="text" name="emails" placeholder="Enter Email or Name" /></div>
                  </div>
                  </div>
               </ModalBody>
@@ -109,10 +117,10 @@ function mapStateToProps(user) {
   if(user.user.user.basic != null) {
       const email = user.user.user.basic.email;
       let pwd = "/";
-      let link = "";
+      let link = "Generate Link";
       if(user.files.files != null ) {
         pwd = user.files.files.pwd;
-        link = user.files.link;
+        link = user.files.link;    
       }
       return {email, pwd, link};
   }

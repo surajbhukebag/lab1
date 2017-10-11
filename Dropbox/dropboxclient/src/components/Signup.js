@@ -79,6 +79,8 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(user) {
   if(user.user != null) {
       const expression = user.user.user.signupmsg;
+      console.log(expression);
+      user.user.user.signupmsg = "";
       return {expression};
   }
     

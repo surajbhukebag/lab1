@@ -1,4 +1,4 @@
-import {LIST_FILES} from "../actions/files";
+import {LIST_FILES, FILE_LINK} from "../actions/files";
 import {USER_SIGNOUT} from "../actions/useractions";
 
 const initialState = {
@@ -56,6 +56,17 @@ const files = (state = initialState, action) => {
 
                 break;  
         
+        case FILE_LINK :
+
+       
+            return {
+               ...state,
+                "link" : action.link                    
+              
+            };
+
+            
+            break;
         default :
             return state;
 

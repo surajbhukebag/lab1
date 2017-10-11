@@ -3,6 +3,7 @@ import {USER_SIGNOUT} from './useractions';
 export const LIST_FILES = 'LIST_FILES';
 export const FILE_UPLOAD = 'FILE_UPLOAD';
 export const FILE_DELETE = 'FILE_DELETE';
+export const FILE_LINK = "FILE_LINK";
 
 
 export function listfiles(dir, email, msg) {
@@ -78,6 +79,7 @@ export function createFolder(data) {
 
 export function fileDelete(file, email, pwd) {
 	let req = {email:email, path:file.path, isDirectory:file.isDirectory}
+	
 	return function(dispatch) {
 		return  API.fileDelete(req)
 			    	.then((resData) => {
@@ -89,5 +91,38 @@ export function fileDelete(file, email, pwd) {
 				    	}
 	      		});
 	  	};
+
+}
+
+export function generateLink(data, email) {
+	let req = {email:email, path:data.path};
+
+
+	return function(dispatch) {
+		return  API.generateLink(req)
+			    	.then((resData) => {
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(getLinkData(resData)); 
+				    	}
+	      		});
+	  	};
+
+}
+
+function getLinkData(resData) {
+	if(resData.code === 200) {
+		return {
+			type: FILE_LINK,
+			link: resData.link
+		};
+	}
+	else {
+	return {
+			type: FILE_LINK
+		};	
+	}
 
 }

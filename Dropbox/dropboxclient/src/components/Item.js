@@ -21,12 +21,12 @@ class Item extends React.Component {
       		this.props.file.isDirectory ?
             <div className="row" >
               <div className="col-md-10 text-left clickable" ><p  onClick={() => {this.props.getListfiles(this.props.file.path, this.props.email)}}> <img  src={folder} alt="folder"/>&nbsp;&nbsp;{this.props.file.name} </p></div>
-              <div className="col-md-2"><FileButton type="folder" attr={this.props.file}/> </div>
+              <div className="col-md-2"><FileButton type="folder" attr={this.props.file} isStar={this.props.isStar} /></div>
             </div>
       		   :
             <div className="row" >
               <div className="col-md-10 text-left"> <img  src={file} alt="file"/> &nbsp;&nbsp;{this.props.file.name} </div>
-              <div className="col-md-2"><FileButton  type="file" attr={this.props.file}/> </div>
+              <div className="col-md-2"><FileButton  type="file" attr={this.props.file} isStar={this.props.isStar}/> </div>
             </div>
              : ''
       	}

@@ -18,7 +18,7 @@ class HomeMain extends React.Component {
        {this.props.starred.length > 0 ?
         this.props.starred.map((file) => {          
             return(
-                   <Item file={file}/>
+                   <Item file={file} isStar="Y"/>
               );          
           })
         :

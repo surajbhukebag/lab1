@@ -49,7 +49,7 @@ function getUserFile(callback, userFilesQuery, createdBy, name, path){
 			callback(null, err);
 		}
 		else 
-		{								
+		{					
 			callback(result, err);						
 		}
 	});
@@ -103,9 +103,29 @@ function getFileLink(callback, checkLinkQuery, fileId){
 
 }
 
+function createSharedFile(callback, shareFileQuery, fileId, uid, sharedWithId){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(shareFileQuery, [fileId, uid, sharedWithId], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{								
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
 
 exports.storeFileDetails = storeFileDetails;
 exports.getStarredFiles = getStarredFiles;
 exports.getUserFile = getUserFile;
 exports.generateLink = generateLink;
 exports.getFileLink = getFileLink;
+exports.createSharedFile = createSharedFile;

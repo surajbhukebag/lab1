@@ -186,7 +186,11 @@ function starredFiles(req, res) {
 
 function generateLink(req, res) {
 
-
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 		let email = req.param("email");
 		let p = req.param("path");
 		let index = p.lastIndexOf("/");
@@ -249,7 +253,72 @@ function generateLink(req, res) {
 
 		}, getUserQuery,email);
 
-	
+	}
+
+}
+
+function share(req, res) {
+
+	let email = req.param("email");
+	let p = req.param("path");
+	let index = p.lastIndexOf("/");
+	let path = "";
+	if(index === 0) {
+		path = "/";
+	}
+	else {
+		path = p.substring(0, index);
+	}
+	let sharedWithList = [];
+	let name = p.substring(index+1);
+	let shareListString = req.param("sharedWith");
+	if(shareListString.includes(',')) {
+		let splitArr = shareListString.split(',');
+		for(var j = 0; j < splitArr.length; j++) {
+			sharedWithList.push(splitArr[j].trim());	
+		}
+	}
+	else {
+		sharedWithList.push(shareListString.trim());
+	}
+
+	let getUserQuery = "select * from user where email = ?";
+	usermysql.getUser(function(uniqueUsername, err, result) {
+		if(!err) {
+			let uid = result[0].id;
+			let fileQuery = "select * from files where createdBy = ? and name = ? and path = ?";
+			mysql.getUserFile(function(r, err) {
+				if(!err) {
+					let fileId = r[0].id;
+					let shareFileQuery = "insert into sharedfiles (fileId, sharedBy, sharedWith) values (?, ?, ?)";
+					for(var i = 0; i < sharedWithList.length; i++) {
+						usermysql.getUser(function(uniqueUsername, err, sharedWith) {
+							if(!err) {
+								mysql.createSharedFile(function(succ, err) {
+									if(!err) {
+										res.send(JSON.stringify({code:200, msg:"File/Folder is shared"}));
+									}
+									else {
+										res.send(JSON.stringify({code:500, msg:"Share file/folder failed."}));
+									}
+
+								}, shareFileQuery, fileId, uid, sharedWith[0].id);	
+							}
+							else {
+								res.send(JSON.stringify({code:500, msg:"Share file/folder failed."}));
+							}
+						}, getUserQuery, sharedWithList[i]);
+					}
+				}
+				else {
+					res.send(JSON.stringify({code:500, msg:"Share file/folder failed."}));
+				}
+			}, fileQuery, uid, name, path);
+		}
+		else {
+			res.send(JSON.stringify({code:500, msg:"Share file/folder failed."}));
+		}
+	}, getUserQuery, email);
 
 }
 
@@ -258,3 +327,4 @@ exports.createFolder = createFolder;
 exports.fileFolderDelete = fileFolderDelete;
 exports.starredFiles = starredFiles;
 exports.generateLink = generateLink;
+exports.share = share;

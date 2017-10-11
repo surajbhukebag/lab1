@@ -68,6 +68,8 @@ app.post('/fileFolderDelete',cors(corsOptions), files.fileFolderDelete);
 app.post('/createFolder',cors(corsOptions), files.createFolder);
 app.get('/starredFiles/:email', cors(corsOptions), files.starredFiles);
 app.post('/generateLink',cors(corsOptions), files.generateLink);
+app.post('/share',cors(corsOptions), files.share);
+
 
 
 http.createServer(app).listen(app.get('port'), function(){

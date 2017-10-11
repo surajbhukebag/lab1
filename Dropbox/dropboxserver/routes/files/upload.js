@@ -46,12 +46,13 @@ function uploadfile(req,res){
 						usermysql.getUser(function(uniqueUsername, err, result) {
 							if(!err) {
 								let storeFileQuery = "insert into files (name, path, isDirectory, createdBy, dateCreated, isStarred) values (?,?,?,?,?,?)";
-								mysql.storeFileDetails(function(err) {
+								mysql.storeFileDetails(function(rss, err, uid) {
 									if(!err) {
-										let responseJson = {code:200, msg:"File is uploaded at : " + req.body.name + req.body.path +"/"+ name}
+										let responseJson = {code:200, msg:"File is uploaded"}
 										res.send(JSON.stringify(responseJson));
 									}
 									else {
+										console.log(err);
 										res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
 									}
 
@@ -59,6 +60,7 @@ function uploadfile(req,res){
 								
 							}
 							else {
+								console.log(err);
 								res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
 							}
 

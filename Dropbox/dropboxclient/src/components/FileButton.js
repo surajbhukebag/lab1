@@ -42,6 +42,21 @@ class FileButton extends React.Component {
     this.toggleModle();
   }
 
+  handleDownload() {
+        fetch(`http://localhost:3001/getDownloadLink`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify({email:this.props.email, path:this.props.attr.path})
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            window.open(responseJson.link);
+        }).catch(error => {
+        });
+  }
+
   render() {
 
     return (
@@ -83,7 +98,7 @@ class FileButton extends React.Component {
               </ModalFooter>
             </Modal>
           </DropdownItem>
-          {this.props.type === 'file' ? <DropdownItem>Download</DropdownItem> : ''}
+          {this.props.type === 'file' ? <DropdownItem onClick={() => {this.handleDownload()}}>Download</DropdownItem> : ''}
           {this.props.isStar === 'Y' ? '' :
            <DropdownItem>
           <p onClick={this.toggleModle}>Delete</p>
@@ -122,7 +137,8 @@ function mapStateToProps(user) {
         pwd = user.files.files.pwd;
         link = user.files.link;    
       }
-      return {email, pwd, link};
+      let ul = "http://localhost:3001/fileDownload/"+email+"/";
+      return {email, pwd, link, ul};
   }
 }
 

@@ -1,10 +1,10 @@
 var mysql = require('./connection');
 
-function storeFileDetails(callback, storeFileQuery, name, path, isDirectory, userId, dateCreated){
+function storeFileDetails(callback, storeFileQuery, name, path, isDirectory, userId, dateCreated, token){
 	
 	var connection=mysql.getConnection();
 
-	connection.query(storeFileQuery, [name, path, isDirectory, userId, dateCreated, 0], function(err, result) {
+	connection.query(storeFileQuery, [name, path, isDirectory, userId, dateCreated, 0, token], function(err, result) {
 		if(err){
 			console.log(err);
 			callback(null, err, userId);
@@ -44,6 +44,26 @@ function getUserFile(callback, userFilesQuery, createdBy, name, path){
 	var connection=mysql.getConnection();
 
 	connection.query(userFilesQuery, [createdBy, name, path], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{					
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+
+function getFileById(callback, getFilesQuery, id){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(getFilesQuery, id, function(err, result) {
 		if(err){
 			console.log(err);
 			callback(null, err);

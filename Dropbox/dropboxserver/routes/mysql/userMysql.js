@@ -91,6 +91,31 @@ function getUser(callback,checkUsernameQuery, email){
 
 }
 
+function getUserById(callback,getUserByIdQuery, id){
+	
+	var connection=mysql.getConnection();
+
+
+	connection.query(getUserByIdQuery, id, function(err, result) {
+			
+		if(err){
+			callback(false, err, result);
+		}
+		else 
+		{			
+			if(result.length == 0) {					
+				callback(result, err);	
+			}	
+			else {
+				callback(result, err);
+			}				
+		}
+		});
+		console.log("\nConnection closed..");
+		connection.end();
+
+}
+
 function userPinfo(callback, userPinfoQuery, req, userId){
 	
 	var connection=mysql.getConnection();
@@ -219,3 +244,4 @@ exports.checkEduinfo = checkEduinfo;
 exports.userEduinfoUpdate = userEduinfoUpdate;
 exports.userEduinfo = userEduinfo;
 exports.getUser = getUser;
+exports.getUserById = getUserById;

@@ -208,16 +208,15 @@ function generateLink(req, res) {
 			if(!err) {
 
 				let userFilesQuery = "select * from files where createdBy = ? and name = ? and path = ?";
-				console.log("name : "+name);
-				console.log("path : "+path);
 				mysql.getUserFile(function(r, err) {
 					if(!err) {
+
 						let checkLinkQuery = "select * from filelink where fileId = ?";
 						mysql.getFileLink(function(rs, err) {
 
 							if(!err) {
 								if(rs.length > 0) {
-									let responseJson = {code:200, link:"http://localhost:3001/downloadFile/"+rs[0].linkString};
+									let responseJson = {code:200, link:"http://localhost:3001/downloadSharedFile/"+rs[0].linkString};
 									res.send(JSON.stringify(responseJson));
 								}
 								else {
@@ -225,7 +224,7 @@ function generateLink(req, res) {
 										mysql.generateLink(function(token, err) {
 
 											if(!err) {
-												let responseJson = {code:200, link:"http://localhost:3001/downloadFile/"+token};
+												let responseJson = {code:200, link:"http://localhost:3001/downloadSharedFile/"+token};
 												res.send(JSON.stringify(responseJson));
 											}
 											else {

@@ -64,6 +64,9 @@ app.post('/userEduInfo', cors(corsOptions), user.userEduInfo);
 
 app.post('/listdir',cors(corsOptions), files.listdir);
 app.post('/fileupload',cors(corsOptions), fileupload.uploadfile);
+app.post('/getDownloadLink',cors(corsOptions), fileupload.getDownloadLink);
+app.get('/downloadSharedFile/:link',cors(corsOptions), fileupload.downloadSharedFile);
+app.get('/filedownload/:link',cors(corsOptions), fileupload.filedownload);
 app.post('/fileFolderDelete',cors(corsOptions), files.fileFolderDelete);
 app.post('/createFolder',cors(corsOptions), files.createFolder);
 app.get('/starredFiles/:email', cors(corsOptions), files.starredFiles);

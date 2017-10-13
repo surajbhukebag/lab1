@@ -14,43 +14,34 @@ function listdir(req,res)
 	let isRoot = true;
 	console.log("dir : "+req.param('dir'));
 	let dir = req.param('dir');
-	if(req.param('dir') != '/') {
-		testFolder = "files/"+req.param('email')+dir;
-		isRoot = false;	
-	}
-	else {
-		testFolder = "files/"+req.param('email');
-	}
+	let createdBy = req.param('id');
 
-	fs.readdir(testFolder, function (err, files) 
-	{
-		
+	console.log("path : "+dir);
+	console.log("created by :"+createdBy);
+
+	let filesQuery = "select * from files where createdBy = ? and path = ?";
+	mysql.getFileList(function(files, err) {
+
 		if(!err) {
 			var result = [];
-			for(var i=0;i<files.length;i++)
-			{
-				let filePath = testFolder+"/"+files[i];
-			
-				var stats = fs.statSync(filePath);
-				if(isRoot) {
-					result.push({path: "/"+files[i], isDirectory: stats.isDirectory(), name:files[i]});
+			for(var i = 0; i < files.length; i++) {
+				let path = "";
+				if(files[i].path === '/') {
+					path = files[i].path+files[i].name;
 				}
 				else {
-					result.push({path: dir+"/"+files[i], isDirectory: stats.isDirectory(), name:files[i]});
+					path = files[i].path+"/"+files[i].name;
 				}
-								
-				
+				result.push({fileId:files[i].id, path: path, isDirectory: files[i].isDirectory, name:files[i].name, starred:files[i].isStarred});
 			}
-			
 			let responseJson = {code:200, files:result}
-			res.send(JSON.stringify(responseJson));			
-
+			res.send(JSON.stringify(responseJson));		
 		}
 		else {
-			res.send(JSON.stringify({code:500,msg:"Invalid dir or server error "}));	
+			res.send(JSON.stringify({code:500,msg:"Unable to fetch files."}));	
 		}
-		
-	});
+	}, filesQuery, createdBy, dir);
+
 	}
 }
 
@@ -109,6 +100,17 @@ function fileFolderDelete(req,res)
 		let path = req.param("path");
 		let email = req.param("email");
 		let isDirectory = req.param("isDirectory");
+		let userId = req.param("id");
+
+		let index = path.lastIndexOf("/");
+		let p = "";
+		if(index === 0) {
+			p = "/";
+		}
+		else {
+			p = path.substring(0, index);
+		}
+		let name = path.substring(index+1);
 
 		if(isDirectory) {
 
@@ -118,7 +120,16 @@ function fileFolderDelete(req,res)
 					res.send(JSON.stringify({code:500, msg:"Folder Deletion failed"}));
 
 				} else {
-					res.send(JSON.stringify({code:200, msg:"Folder Deletion successful"}));
+					let deleteFileQuery = "delete from files where name = ? and path = ? and createdBy = ?";
+					mysql.deleteFile(function(r, err) {
+						if(!err) {
+							res.send(JSON.stringify({code:200, msg:"Folder Deletion successful"}));
+						}
+						else {
+							res.send(JSON.stringify({code:500, msg:"File deletion failed"}));
+						}
+					}, deleteFileQuery, name, p, userId);
+					
 				}
 			});
 
@@ -127,10 +138,19 @@ function fileFolderDelete(req,res)
 
 			fs.unlink("./files/" + email+"/"+path, function(err) {
 			    if (err) {
+			    	console.log(err);
 			    	res.send(JSON.stringify({code:500, msg:"File deletion failed"}));
 			    }
 			    else {
-					res.send(JSON.stringify({code:200, msg:"File Deletion successful"}));	
+					let deleteFileQuery = "delete from files where name = ? and path = ? and createdBy = ?";
+					mysql.deleteFile(function(r, err) {
+						if(!err) {
+							res.send(JSON.stringify({code:200, msg:"Folder Deletion successful"}));
+						}
+						else {
+							res.send(JSON.stringify({code:500, msg:"File deletion failed"}));
+						}
+					}, deleteFileQuery, name, p, userId);
 			    }
 			});
 
@@ -147,40 +167,34 @@ function starredFiles(req, res) {
 		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
 	}
 	else {
-	let email = req.param("email");
-	let getUserQuery = "select * from user where email = ?";
-	usermysql.getUser(function(uniqueUsername, err, result) {
-		if(!err) {
-			let starredFilesQuery = "select * from files where createdBy = ? and isStarred = ?";
-			mysql.getStarredFiles(function(result, err) {
-				if(!err) {
-					let re = [];
-					for(var i = 0; i < result.length; i++) {
-						let p = "";
-						if(result[i].path === "/") {
-							p = result[i].path+result[i].name
-						}
-						else {
-							p = result[i].path+"/"+result[i].name	
-						}
+		let userId = req.param("userId");
 
-						re.push({path:p , isDirectory: result[i].isDirectory, name:result[i].name});
+		let starredFilesQuery = "select * from files where createdBy = ? and isStarred = ?";
+		mysql.getStarredFiles(function(result, err) {
+			if(!err) {
+				let re = [];
+				for(var i = 0; i < result.length; i++) {
+					let p = "";
+					if(result[i].path === "/") {
+						p = result[i].path+result[i].name
 					}
-					let responseJson = {code:200, starred:re};
-					res.send(JSON.stringify(responseJson));
-				}
-				else {
-					res.send(JSON.stringify({code:500, msg:"Unable to fetch starred files."}));
-				}
+					else {
+						p = result[i].path+"/"+result[i].name	
+					}
 
-			}, starredFilesQuery, result[0].id);			
-		}
-		else {
-			res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
-		}
+					re.push({fileId: result[i].id, starred:result[i].isStarred, path:p , isDirectory: result[i].isDirectory, name:result[i].name});
+				}
+				let responseJson = {code:200, starred:re};
+				res.send(JSON.stringify(responseJson));
+			}
+			else {
+				res.send(JSON.stringify({code:500, msg:"Unable to fetch starred files."}));
+			}
 
-	}, getUserQuery,email);
+		}, starredFilesQuery, userId);			
+	
 	}
+	
 
 }
 
@@ -344,7 +358,6 @@ function sharedFiles(req, res) {
 	usermysql.getUser(function(uniqueUsername, err, result) {
 		if(!err) {
 
-			
 			let sharedFilesQuery = "select * from files where id in (select fileId from sharedfiles where sharedBy = ? or sharedWith = ?)";
 			mysql.getSharedFiles(function(f, err) {
 
@@ -384,6 +397,12 @@ function sharedFiles(req, res) {
 
 function sharedFileLinks(req, res) {
 
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+
 	let email = req.param("email");
 
 	let getUserQuery = "select * from user where email = ?";
@@ -417,8 +436,45 @@ function sharedFileLinks(req, res) {
 		}
 
 	}, getUserQuery, email);
+	
+	}
 
+}
 
+function starAFile(req, res) {
+
+	let createdBy = req.param("id");
+	let p = req.param("path");
+	let index = p.lastIndexOf("/");
+	let path = "";
+	let starReq = req.param("star");
+	let isStarred = false;
+	if(starReq === 'star') {
+		isStarred = true;
+	}
+	if(index === 0) {
+		path = "/";
+	}
+	else {
+		path = p.substring(0, index);
+	}
+	let name = p.substring(index+1);
+
+	let starAFileQuery = "update files set isStarred = ? where createdBy = ? and name = ? and path = ?";
+	mysql.starFile(function(result, err){
+		if(!err) {
+			if(isStarred) {
+				res.send(JSON.stringify({code:200, msg:"File/Fodler starred."}));
+			}
+			else {
+				res.send(JSON.stringify({code:200, msg:"File/Fodler Unstarred."}));
+			}
+			
+		}
+		else {
+			res.send(JSON.stringify({code:500, msg:"Unable to star file/fodler."}));
+		}
+	}, starAFileQuery, isStarred, createdBy, name, path);
 }
 
 exports.listdir = listdir;
@@ -429,3 +485,4 @@ exports.generateLink = generateLink;
 exports.share = share;
 exports.sharedFiles = sharedFiles;
 exports.sharedFileLinks = sharedFileLinks;
+exports.starAFile = starAFile;

@@ -203,6 +203,67 @@ function getSharedLinkFiles(callback, getSharedFilesQuery, id){
 
 }
 
+function starFile(callback, starFileQuery, isStarred,createdBy, name, path){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(starFileQuery, [isStarred, createdBy, name, path], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{			
+			console.log("result "+result.affectedRows);
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+
+function getFileList(callback, filesQuery, createdBy, path){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(filesQuery, [createdBy, path], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{				
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+function deleteFile(callback, deleteFileQuery, name, path, createdBy){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(deleteFileQuery, [name, path, createdBy], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{				
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+
+
 exports.storeFileDetails = storeFileDetails;
 exports.getStarredFiles = getStarredFiles;
 exports.getUserFile = getUserFile;
@@ -213,3 +274,6 @@ exports.getFileLinkByUser = getFileLinkByUser;
 exports.getFileById = getFileById;
 exports.getSharedFiles = getSharedFiles;
 exports.getSharedLinkFiles = getSharedLinkFiles;
+exports.starFile = starFile;
+exports.getFileList = getFileList;
+exports.deleteFile = deleteFile;

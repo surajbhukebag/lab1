@@ -69,7 +69,8 @@ app.get('/downloadSharedFile/:link',cors(corsOptions), fileupload.downloadShared
 app.get('/filedownload/:link',cors(corsOptions), fileupload.filedownload);
 app.post('/fileFolderDelete',cors(corsOptions), files.fileFolderDelete);
 app.post('/createFolder',cors(corsOptions), files.createFolder);
-app.get('/starredFiles/:email', cors(corsOptions), files.starredFiles);
+app.post('/starFile',cors(corsOptions), files.starAFile);
+app.get('/starredFiles/:userId', cors(corsOptions), files.starredFiles);
 app.post('/generateLink',cors(corsOptions), files.generateLink);
 app.post('/share',cors(corsOptions), files.share);
 app.post('/sharedFiles',cors(corsOptions), files.sharedFiles);

@@ -33,7 +33,7 @@ class HomeRightNav extends React.Component {
       data.append('file', event.target.files[0]);
       data.append('name', this.props.email);
       data.append('path', this.props.pwd);
-      this.props.upload(data, this.props.email, this.props.pwd);
+      this.props.upload(data, this.props.email, this.props.pwd, this.props.userId);
   }
 
 
@@ -92,7 +92,7 @@ class HomeRightNav extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        upload : (data, email, pwd) => dispatch(fileUpload(data, email, pwd)),
+        upload : (data, email, pwd, userId) => dispatch(fileUpload(data, email, pwd, userId)),
         signout : () => dispatch(signout())
     };
 }
@@ -100,6 +100,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(user) {
   if(user.user.user.basic != null) {
       const email = user.user.user.basic.email;
+      const userId = user.user.user.basic.id;
       const fname = user.user.user.basic.fname;
       const loggedin = user.user.user.loggedin;
       let pwd = "/";
@@ -107,7 +108,7 @@ function mapStateToProps(user) {
         pwd = user.files.files.pwd;
       }
       console.log("pwd : "+pwd);     
-      return {email, fname, loggedin, pwd};
+      return {email, fname, loggedin, pwd, userId};
   }
     
 }

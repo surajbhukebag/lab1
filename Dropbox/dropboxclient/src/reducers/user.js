@@ -1,4 +1,4 @@
-import {USER_SIGNUP, USER_SIGNIN, USER_SIGNOUT, USER_PINFO, USER_EDUINFO} from "../actions/useractions";
+import {USER_SIGNUP, USER_SIGNIN, USER_SIGNOUT, USER_PINFO, USER_EDUINFO, USER_STAR_ACT} from "../actions/useractions";
 
 const initialState = {
        
@@ -42,7 +42,7 @@ const user = (state = initialState, action) => {
                     return {
                        ...state,
                        "user":{
-                                "basic": {"fname":action.user.fname, "lanme":action.user.lname, "email":action.user.email},
+                                "basic": action.user,
                                 "pinfo" : action.pinfo,
                                 "eduinfo" : action.eduinfo,
                                 "loggedin" : true,
@@ -115,6 +115,29 @@ const user = (state = initialState, action) => {
                                 "loggedin":state.user.loggedin,
                                 "pinfo": state.user.pinfo,
                                 "eduinfo" : action.eduinfo
+                            }
+                    };
+
+                }
+                else {
+                    return {
+                        ...state
+                    }
+                }               
+
+                break;
+
+             case USER_STAR_ACT :
+                if(action.starred) {
+              
+                    return {
+                       ...state,
+                       "user":{
+                                "basic": state.user.basic,
+                                "loggedin" : state.user.loggedin,
+                                "pinfo": state.user.pinfo,
+                                "eduinfo" : state.user.eduinfo,
+                                "starred" : action.starred  
                             }
                     };
 

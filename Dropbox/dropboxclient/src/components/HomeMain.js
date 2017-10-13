@@ -15,10 +15,10 @@ class HomeMain extends React.Component {
        <br/>
        <p className="text-left">Starred</p>
        <div><hr/>
-       {this.props.starred.length > 0 ?
+       {this.props.starred !== undefined && this.props.starred.length > 0 ?
         this.props.starred.map((file) => {          
             return(
-                   <Item file={file} isStar="Y"/>
+                   <NavLink href="#"> <Item file={file} /> </NavLink>
               );          
           })
         :

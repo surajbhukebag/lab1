@@ -6,11 +6,12 @@ export const FILE_DELETE = 'FILE_DELETE';
 export const FILE_LINK = "FILE_LINK";
 export const FILE_SHARE = "FILE_SHARE";
 export const FILE_SHARE_LIST = "FILE_SHARE_LIST";
+export const FILE_STAR = "FILE_STAR";
 
 
 export function listfiles(dir, email, msg) {
 
-	let req = {dir:dir, email:email};
+	let req = {dir:dir, id:email};
 
 	return function(dispatch) {
 		return  API.listdir(req)
@@ -46,7 +47,7 @@ export function updateListFiles(resData, dir, msg) {
 	
 }
 
-export function fileUpload(data, email, pwd) {
+export function fileUpload(data, email, pwd, userId) {
 	
 	return function(dispatch) {
 		return  API.fileupload(data)
@@ -55,14 +56,15 @@ export function fileUpload(data, email, pwd) {
 			    			dispatch(invalidSession()); 
 			    		}
 			    		else {
-				        	dispatch(listfiles(pwd,email, resData.msg)); 
+			    			console.log("userd id : "+ userId);
+				        	dispatch(listfiles(pwd,userId, resData.msg)); 
 				    	}
 	      		});
 	  	};
 }
 
 
-export function createFolder(data) {
+export function createFolder(data, userId) {
 	console.log("email "+data.path);
 	let req = {email:data.email, path:data.path, folderName:data.foldername};
 
@@ -73,14 +75,14 @@ export function createFolder(data) {
 			    			dispatch(invalidSession()); 
 			    		}
 			    		else {
-				        	dispatch(listfiles(data.path, data.email, resData.msg)); 
+				        	dispatch(listfiles(data.path, userId, resData.msg)); 
 				    	}
 	      		});
 	  	};
 }
 
-export function fileDelete(file, email, pwd) {
-	let req = {email:email, path:file.path, isDirectory:file.isDirectory}
+export function fileDelete(file, email, pwd, userId) {
+	let req = {email:email, path:file.path, isDirectory:file.isDirectory, id:userId};
 	
 	return function(dispatch) {
 		return  API.fileDelete(req)
@@ -89,7 +91,7 @@ export function fileDelete(file, email, pwd) {
 			    			dispatch(invalidSession()); 
 			    		}
 			    		else {
-				        	dispatch(listfiles(pwd,email, resData.msg)); 
+				        	dispatch(listfiles(pwd,userId, resData.msg)); 
 				    	}
 	      		});
 	  	};
@@ -189,3 +191,21 @@ function getSharedFileData(resData, rsData) {
 		links: rsData.links
 	}
 }
+
+export function starAFile(fileId, path, pwd, userId, star) {
+	let req = {id:userId, path:path, star:star};
+
+	return function(dispatch) {
+		return  API.starFile(req)
+			    	.then((resData) => {
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(listfiles(pwd,userId, resData.msg)); 
+				    	}
+	      		});
+	  	};
+
+}
+

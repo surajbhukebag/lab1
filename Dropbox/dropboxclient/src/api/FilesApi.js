@@ -174,3 +174,22 @@ export const sharedFileLinks = (payload) =>
             return error;
     });
 
+
+export const starFile = (payload) =>  
+    fetch(`${api}/starFile`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Star a file failed");
+            return error;
+    });

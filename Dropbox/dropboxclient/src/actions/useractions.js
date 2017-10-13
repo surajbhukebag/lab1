@@ -7,6 +7,7 @@ export const USER_SIGNIN = 'USER_SIGNIN';
 export const USER_SIGNOUT = 'USER_SIGNOUT';
 export const USER_PINFO = 'USER_PINFO';
 export const USER_EDUINFO = 'USER_EDUINFO';
+export const USER_STAR_ACT = 'USER_STAR_ACT';
 
 
 
@@ -45,7 +46,7 @@ export function userSignin(userDeails) {
 						    			dispatch(invalidSession()); 
 						    }
 						    else {
-					    		FAPI.getStarredFiles(resData.user.email)
+					    		FAPI.getStarredFiles(resData.user.id)
 							    	.then((rData) => {
 							    		if(rData.code === 502) {
 							    			dispatch(invalidSession()); 
@@ -79,7 +80,7 @@ export function updateSigninUserData(resData, rData) {
 	if(resData.code === 200) {
 		return {
 			type: USER_SIGNIN,
-			user: {"fname":resData.user.fname, "lname":resData.user.lname, "email":resData.user.email},
+			user: resData.user,
 			pinfo: resData.pinfo,
 			eduinfo: resData.eduinfo,
 			starred: rData.starred
@@ -248,4 +249,26 @@ function invalidSession() {
 			loggedOut: true
 		}
 
+}
+
+export function getStarredfilesAndActivity(userId) {
+
+	return function(dispatch) {
+		FAPI.getStarredFiles(userId)
+		    	.then((resData) => {
+		    		if(resData.code === 502) {
+		    			dispatch(invalidSession()); 
+		    		}
+		    		else {
+			        	dispatch(updateStarredData(resData)); 
+			    	}
+	  		});	
+	}
+}
+
+function updateStarredData(resData) {
+	return {
+		type: USER_STAR_ACT,
+		starred : resData.starred
+	}
 }

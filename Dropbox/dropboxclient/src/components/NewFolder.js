@@ -30,7 +30,7 @@ class NewFolder extends React.Component {
       
       this.state.email = this.props.email;
       this.state.path = this.props.pwd;
-      this.props.createFolder(this.state);
+      this.props.createFolder(this.state, this.props.userId);
       this.toggle();
 
   }
@@ -68,18 +68,19 @@ class NewFolder extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        createFolder : (data) => dispatch(createFolder(data))
+        createFolder : (data, userId) => dispatch(createFolder(data, userId))
     };
 }
 
 function mapStateToProps(user) {
   if(user.user.user.basic != null) {
       const email = user.user.user.basic.email;
+      const userId = user.user.user.basic.id;
       let pwd = "/";
       if(user.files.files != null ) {
         pwd = user.files.files.pwd;
       }
-      return {email, pwd};
+      return {email, pwd, userId};
   }
     
 }

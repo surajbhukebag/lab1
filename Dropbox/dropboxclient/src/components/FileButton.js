@@ -3,6 +3,8 @@ import {connect} from 'react-redux';
 import {fileDelete} from "../actions/files";
 import {generateLink} from "../actions/files";
 import {sharewithPpl} from "../actions/files";
+import {starAFile} from "../actions/files";
+
 import { Input, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 class FileButton extends React.Component {
@@ -40,7 +42,7 @@ class FileButton extends React.Component {
   }
 
   handleOnclick() {
-    this.props.fileDelete(this.props.attr, this.props.email, this.props.pwd);
+    this.props.fileDelete(this.props.attr, this.props.email, this.props.pwd, this.props.userId);
     this.toggleModle();
   }
 
@@ -127,7 +129,14 @@ class FileButton extends React.Component {
             </Modal>
           </DropdownItem>
           }
+          <DropdownItem>
+          {this.props.isStar === 1 ? 
+              <p onClick={() => {this.props.starAFile(this.props.attr.fileId, this.props.attr.path, this.props.pwd, this.props.userId, "unstar")}}>Remove From Starred</p>
+            :
+              <p onClick={() => {this.props.starAFile(this.props.attr.fileId, this.props.attr.path, this.props.pwd, this.props.userId, "star")}}>Add To Starred</p>         
+         }
          
+          </DropdownItem>
         </DropdownMenu>
       </ButtonDropdown>
     );
@@ -136,15 +145,17 @@ class FileButton extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fileDelete : (data, email, pwd) => dispatch(fileDelete(data, email, pwd)),
+        fileDelete : (data, email, pwd, userId) => dispatch(fileDelete(data, email, pwd, userId)),
         generateLink : (data, email) => dispatch(generateLink(data, email)),
-        shareWithPpl : (sharedwith, email, path) => dispatch(sharewithPpl(sharedwith, email, path))
+        shareWithPpl : (sharedwith, email, path) => dispatch(sharewithPpl(sharedwith, email, path)),
+        starAFile : (fileId, path, pwd, userId, star) => dispatch(starAFile(fileId, path, pwd, userId, star))
     };
 }
 
 function mapStateToProps(user) {
   if(user.user.user.basic != null) {
       const email = user.user.user.basic.email;
+      const userId = user.user.user.basic.id;
       let pwd = "/";
       let link = "Generate Link";
       if(user.files.files != null ) {
@@ -152,7 +163,7 @@ function mapStateToProps(user) {
         link = user.files.link;    
       }
       let ul = "http://localhost:3001/fileDownload/"+email+"/";
-      return {email, pwd, link, ul};
+      return {email, pwd, link, ul, userId};
   }
 }
 

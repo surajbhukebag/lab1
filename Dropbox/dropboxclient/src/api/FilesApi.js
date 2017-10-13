@@ -115,3 +115,62 @@ export const generateLink = (payload) =>
             console.log("File Link creation failed");
             return error;
     });
+
+export const fileShare = (payload) =>  
+    fetch(`${api}/share`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("File Sharing failed");
+            return error;
+    });
+
+        
+export const sharedFiles = (payload) =>  
+    fetch(`${api}/sharedFiles`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Get File Sharing data failed");
+            return error;
+    });
+
+export const sharedFileLinks = (payload) =>  
+    fetch(`${api}/sharedFileLinks`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Get File Sharing data failed");
+            return error;
+    });
+

@@ -5,6 +5,7 @@ import Signup from './Signup'
 import NavHeader from './Nav'
 import Home from './Home'
 import FilesHome from './FilesHome'
+import SharingHome from './SharingHome'
 import UserSettings from './UserSettings'
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
@@ -55,6 +56,12 @@ class Root extends Component {
 	                <Route exact path="/files" render={() => (
 	                    <div>
 	                       <FilesHome />
+	                    </div>
+	                )} />
+
+              		<Route exact path="/sharing" render={() => (
+	                    <div>
+	                       <SharingHome />
 	                    </div>
 	                )} />
 

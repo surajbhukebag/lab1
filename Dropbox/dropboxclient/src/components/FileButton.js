@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {fileDelete} from "../actions/files";
 import {generateLink} from "../actions/files";
+import {sharewithPpl} from "../actions/files";
 import { Input, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 class FileButton extends React.Component {
@@ -15,7 +16,8 @@ class FileButton extends React.Component {
     this.state = {
       dropdownOpen: false,
       modal: false,
-      shareModal: false
+      shareModal: false,
+      sharedwith : ""
     };
   }
 
@@ -40,6 +42,13 @@ class FileButton extends React.Component {
   handleOnclick() {
     this.props.fileDelete(this.props.attr, this.props.email, this.props.pwd);
     this.toggleModle();
+  }
+
+  handleShareClick() {
+
+    this.props.shareWithPpl(this.state.sharedwith, this.props.email, this.props.attr.path);
+    this.toggleShareModle();
+
   }
 
   handleDownload() {
@@ -74,7 +83,7 @@ class FileButton extends React.Component {
                   {this.props.attr.isDirectory ? ''  :
                   <div>
                     <div className="row">
-                      <div className="col-md-4"><Button color="primary" onClick={() => {this.props.generateLink(this.props.attr,this.props.email)}}>Generate Link</Button></div>         
+                      <div className="col-md-4"><Button color="primary" onClick={() => {this.props.generateLink(this.props.attr,this.props.email)}}>Share By Link</Button></div>         
                     </div>
                     <br />
                     <div className="row">
@@ -85,11 +94,15 @@ class FileButton extends React.Component {
            
                  <br/>
                  <div className="row">
-                  <div className="col-md-4"><Button color="primary">Share By Email or Name</Button></div>
+                  <div className="col-md-4"><Button color="primary" onClick={() => {this.handleShareClick()}}>Share By Email or Name</Button></div>
                   </div>
                   <br/>
                  <div className="row">
-                    <div className="col-md-12"><Input type="text" name="emails" placeholder="Enter Email or Name" /></div>
+                    <div className="col-md-12"><Input type="text" name="emails" placeholder="Enter Email or Name" onChange={(event) => {
+                                    this.setState({
+                                        sharedwith: event.target.value
+                                    });
+                                }} /></div>
                  </div>
                  </div>
               </ModalBody>
@@ -124,7 +137,8 @@ class FileButton extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         fileDelete : (data, email, pwd) => dispatch(fileDelete(data, email, pwd)),
-        generateLink : (data, email) => dispatch(generateLink(data, email))
+        generateLink : (data, email) => dispatch(generateLink(data, email)),
+        shareWithPpl : (sharedwith, email, path) => dispatch(sharewithPpl(sharedwith, email, path))
     };
 }
 

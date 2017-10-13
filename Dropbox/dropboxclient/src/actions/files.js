@@ -4,6 +4,8 @@ export const LIST_FILES = 'LIST_FILES';
 export const FILE_UPLOAD = 'FILE_UPLOAD';
 export const FILE_DELETE = 'FILE_DELETE';
 export const FILE_LINK = "FILE_LINK";
+export const FILE_SHARE = "FILE_SHARE";
+export const FILE_SHARE_LIST = "FILE_SHARE_LIST";
 
 
 export function listfiles(dir, email, msg) {
@@ -125,4 +127,65 @@ function getLinkData(resData) {
 		};	
 	}
 
+}
+
+export function sharewithPpl(sharedwith, email, path) {
+
+	let req = {email:email, path:path, sharedWith:sharedwith};
+
+	return function(dispatch) {
+		return  API.fileShare(req)
+			    	.then((resData) => {
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	dispatch(getFileShareData(resData)); 
+				    	}
+	      		});
+	  	};
+}
+
+function getFileShareData(resData) {
+	
+	return {
+			type: FILE_SHARE,
+			msg: resData.msg
+	};
+}
+
+export function getSharedfiles(email) {
+	
+let req = {email:email};
+
+	return function(dispatch) {
+		return  API.sharedFiles(req)
+			    	.then((resData) => {
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+				        	
+				        	API.sharedFileLinks(req)
+						    	.then((rsData) => {
+						    		if(resData.code === 502) {
+						    			dispatch(invalidSession()); 
+						    		}
+						    		else {
+							        	dispatch(getSharedFileData(resData, rsData));
+							    	}
+				      		});
+				    	}
+	      		});
+	  	};
+
+}
+
+function getSharedFileData(resData, rsData) {
+	return {
+		type: FILE_SHARE_LIST,
+		files: resData.files,
+		folders: resData.folders,
+		links: rsData.links
+	}
 }

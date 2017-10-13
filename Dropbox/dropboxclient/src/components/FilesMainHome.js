@@ -20,7 +20,7 @@ class FilesMainHome extends React.Component {
           this.props.fileList.map((file) => {
           
             return(
-                   <Item file={file}/>
+                  <NavLink href="#"> <Item file={file}/> </NavLink>
               );
           
           }) : ''       

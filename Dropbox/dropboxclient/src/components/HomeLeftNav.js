@@ -3,6 +3,7 @@ import { Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Nav
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
 import {listfiles} from "../actions/files";
+import {getSharedfiles} from "../actions/files";
 import { Route, withRouter, Link } from 'react-router-dom';
 import {connect} from 'react-redux';
 
@@ -26,7 +27,7 @@ class HomeLeftNav extends React.Component {
             <br/>
           </NavItem>
           <NavItem>
-            <Link to="#">Sharing</Link>
+            <Link to="/sharing" onClick={() => {this.props.getSharedfiles(this.props.email)}}>Sharing</Link>
           </NavItem>
           <NavItem>
             <br/>
@@ -42,7 +43,8 @@ class HomeLeftNav extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getListfiles : (data, email) => dispatch(listfiles(data, email))
+        getListfiles : (data, email) => dispatch(listfiles(data, email)),
+        getSharedfiles : (email) => dispatch(getSharedfiles(email))
     };
 }
 

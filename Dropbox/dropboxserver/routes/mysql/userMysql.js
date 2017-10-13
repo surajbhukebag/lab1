@@ -48,11 +48,12 @@ function checkUsername(callback,checkUsernameQuery, req){
 	connection.query(checkUsernameQuery, req.param("email"), function(err, result) {
 			
 		if(err){
+			console.log(err);
 			callback(false, err, result);
 		}
 		else 
 		{			
-			if(result.length == 0) {					
+			if(result.length == 0) {	
 				callback(true, err, result);	
 			}	
 			else {

@@ -85,6 +85,11 @@ function uploadfile(req,res){
 
 function getDownloadLink(req, res) {
 
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 		let email = req.param("email");
 		let p = req.param("path");
 		let index = p.lastIndexOf("/");
@@ -118,11 +123,18 @@ function getDownloadLink(req, res) {
 			}
 
 		}, getUserQuery,email);
+	}
 
 }
 
 
 function filedownload(req, res) {
+
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 
 	let filelink = req.param("link");
 	let fileQuery = "select * from files where link = ?";
@@ -159,9 +171,17 @@ function filedownload(req, res) {
 
 		
 	}, fileQuery, filelink);
+
+	}
 }
 
 function downloadSharedFile(req, res) {
+
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 
 	let filelink = req.param("link");
 	let fileQuery = "select * from filelink where linkString = ?";
@@ -179,7 +199,7 @@ function downloadSharedFile(req, res) {
 					filepath = "files/"+user[0].email+file[0].path+file[0].name;
 				}
 				else {
-					filepath = "files/"+user[0].email+"/"+file[0].path+file[0].name;
+					filepath = "files/"+user[0].email+file[0].path+"/"+file[0].name;
 				}
 				
 				console.log("path : "+filepath);
@@ -204,9 +224,10 @@ function downloadSharedFile(req, res) {
 
 		
 	}, fileQuery, f[0].fileId);
-		
+			
 		
 	}, fileQuery, filelink);
+	}
 }
 
 exports.uploadfile = uploadfile;

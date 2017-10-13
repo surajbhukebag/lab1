@@ -78,14 +78,14 @@ function getFileById(callback, getFilesQuery, id){
 
 }
 
-function generateLink(callback, generateLinkQuery, fileId){
+function generateLink(callback, generateLinkQuery, fileId, createdBy){
 	
 	var connection=mysql.getConnection();
 
 	require('crypto').randomBytes(20, function(err, buffer) {
 		var token = buffer.toString('hex');
 
-		connection.query(generateLinkQuery, [token, fileId], function(err, result) {
+		connection.query(generateLinkQuery, [token, fileId, new Date().getTime(), createdBy], function(err, result) {
 			if(err){
 				console.log(err);
 				callback(null, err);
@@ -123,11 +123,32 @@ function getFileLink(callback, checkLinkQuery, fileId){
 
 }
 
+
+
+function getFileLinkByUser(callback, linkQuery, createdBy){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(linkQuery, createdBy, function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{								
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
 function createSharedFile(callback, shareFileQuery, fileId, uid, sharedWithId){
 	
 	var connection=mysql.getConnection();
 
-	connection.query(shareFileQuery, [fileId, uid, sharedWithId], function(err, result) {
+	connection.query(shareFileQuery, [fileId, uid, sharedWithId, new Date().getTime()], function(err, result) {
 		if(err){
 			console.log(err);
 			callback(null, err);
@@ -143,9 +164,52 @@ function createSharedFile(callback, shareFileQuery, fileId, uid, sharedWithId){
 }
 
 
+function getSharedFiles(callback, getSharedFilesQuery, id){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(getSharedFilesQuery, [id, id], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{					
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+
+function getSharedLinkFiles(callback, getSharedFilesQuery, id){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(getSharedFilesQuery, id, function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{					
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
 exports.storeFileDetails = storeFileDetails;
 exports.getStarredFiles = getStarredFiles;
 exports.getUserFile = getUserFile;
 exports.generateLink = generateLink;
 exports.getFileLink = getFileLink;
 exports.createSharedFile = createSharedFile;
+exports.getFileLinkByUser = getFileLinkByUser;
+exports.getFileById = getFileById;
+exports.getSharedFiles = getSharedFiles;
+exports.getSharedLinkFiles = getSharedLinkFiles;

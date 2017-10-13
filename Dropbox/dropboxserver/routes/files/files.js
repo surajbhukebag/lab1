@@ -220,18 +220,20 @@ function generateLink(req, res) {
 									res.send(JSON.stringify(responseJson));
 								}
 								else {
-										let generateLinkQuery = "insert into filelink(linkString, fileId) values (?,?)";
+										let generateLinkQuery = "insert into filelink(linkString, fileId, dateCreated, createdBy) values (?,?,?,?)";
 										mysql.generateLink(function(token, err) {
 
 											if(!err) {
+												console.log("link : "+token);
 												let responseJson = {code:200, link:"http://localhost:3001/downloadSharedFile/"+token};
 												res.send(JSON.stringify(responseJson));
 											}
 											else {
+												console.log("link "+err);
 												res.send(JSON.stringify({code:500, msg:"Unable to Generate Link."}));
 											}
 
-										}, generateLinkQuery, r[0].id);
+										}, generateLinkQuery, r[0].id, result[0].id);
 								}
 							}
 							else {
@@ -241,12 +243,14 @@ function generateLink(req, res) {
 						
 					}
 					else {
+						console.log("link "+err);
 						res.send(JSON.stringify({code:500, msg:"Unable to fetch starred files."}));
 					}
 
 				}, userFilesQuery, result[0].id, name, path);			
 			}
 			else {
+				console.log("link "+err);
 				res.send(JSON.stringify({code:500, msg:"Link Generation failed"}));
 			}
 
@@ -258,6 +262,11 @@ function generateLink(req, res) {
 
 function share(req, res) {
 
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
 	let email = req.param("email");
 	let p = req.param("path");
 	let index = p.lastIndexOf("/");
@@ -289,7 +298,7 @@ function share(req, res) {
 			mysql.getUserFile(function(r, err) {
 				if(!err) {
 					let fileId = r[0].id;
-					let shareFileQuery = "insert into sharedfiles (fileId, sharedBy, sharedWith) values (?, ?, ?)";
+					let shareFileQuery = "insert into sharedfiles (fileId, sharedBy, sharedWith, dateCreated) values (?, ?, ?, ?)";
 					for(var i = 0; i < sharedWithList.length; i++) {
 						usermysql.getUser(function(uniqueUsername, err, sharedWith) {
 							if(!err) {
@@ -301,7 +310,8 @@ function share(req, res) {
 										res.send(JSON.stringify({code:500, msg:"Share file/folder failed."}));
 									}
 
-								}, shareFileQuery, fileId, uid, sharedWith[0].id);	
+								}, shareFileQuery, fileId, uid, sharedWith[0].id);
+								
 							}
 							else {
 								res.send(JSON.stringify({code:500, msg:"Share file/folder failed."}));
@@ -319,6 +329,96 @@ function share(req, res) {
 		}
 	}, getUserQuery, email);
 
+	}
+}
+
+function sharedFiles(req, res) {
+
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+	let email = req.param("email");
+	let getUserQuery = "select * from user where email = ?";
+	usermysql.getUser(function(uniqueUsername, err, result) {
+		if(!err) {
+
+			
+			let sharedFilesQuery = "select * from files where id in (select fileId from sharedfiles where sharedBy = ? or sharedWith = ?)";
+			mysql.getSharedFiles(function(f, err) {
+
+				if(!err) {
+
+					let files = [], folders = [], links = [];
+
+					for(var i = 0; i < f.length; i++) {
+
+						if(f[i].isDirectory) {
+							folders.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy});
+						}
+						else {
+							files.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy});	
+						}						
+
+					}
+	
+					res.send(JSON.stringify({code:200, msg:"Retrieved shared data.", files:files, folders:folders}));
+				}
+				else {
+					res.send(JSON.stringify({code:500, msg:"Unable to Retrieve shared data."}));
+				}
+
+			}, sharedFilesQuery, result[0].id);
+
+			}
+			else {
+				res.send(JSON.stringify({code:500, msg:"Unable to Retrieve shared data."}));
+			}
+
+	}, getUserQuery, email);
+
+	}
+
+}
+
+function sharedFileLinks(req, res) {
+
+	let email = req.param("email");
+
+	let getUserQuery = "select * from user where email = ?";
+	usermysql.getUser(function(uniqueUsername, err, result) {
+		if(!err) {
+			let getSharedFileLinksQuery = "SELECT f.name as name, f.path as path , l.linkString as link FROM files f INNER JOIN filelink l on f.id = l.fileId where l.createdBy = ?"
+			mysql.getSharedLinkFiles(function(f, err){
+
+				if(!err) {
+
+					let links = [];
+
+					for(var i = 0; i < f.length; i++) {
+						
+						links.push({name:f[i].name, path:f[i].path+f[i].name,link:f[i].link,owner: result[0].id});											
+
+					}
+	
+					res.send(JSON.stringify({code:200, msg:"Retrieved shared data.", links:links}));
+				}
+				else {
+					res.send(JSON.stringify({code:500, msg:"Unable to Retrieve shared data."}));
+				}
+
+
+			}, getSharedFileLinksQuery, result[0].id);
+
+		}
+		else {
+			res.send(JSON.stringify({code:500, msg:"Unable to Retrieve shared link data."}));
+		}
+
+	}, getUserQuery, email);
+
+
 }
 
 exports.listdir = listdir;
@@ -327,3 +427,5 @@ exports.fileFolderDelete = fileFolderDelete;
 exports.starredFiles = starredFiles;
 exports.generateLink = generateLink;
 exports.share = share;
+exports.sharedFiles = sharedFiles;
+exports.sharedFileLinks = sharedFileLinks;

@@ -72,6 +72,8 @@ app.post('/createFolder',cors(corsOptions), files.createFolder);
 app.get('/starredFiles/:email', cors(corsOptions), files.starredFiles);
 app.post('/generateLink',cors(corsOptions), files.generateLink);
 app.post('/share',cors(corsOptions), files.share);
+app.post('/sharedFiles',cors(corsOptions), files.sharedFiles);
+app.post('/sharedFileLinks',cors(corsOptions), files.sharedFileLinks);
 
 
 

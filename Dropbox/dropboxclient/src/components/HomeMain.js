@@ -26,9 +26,17 @@ class HomeMain extends React.Component {
        }
        
        <br/>
-       <p className="text-left">Recent</p>
+       <p className="text-left">User Activity</p>
        <hr/>
-       
+        {this.props.recent !== undefined && this.props.recent.length > 0 ?
+        this.props.recent.map((file) => {          
+            return(
+                   <NavLink href="#"> <Item file={file} /> </NavLink>
+              );          
+          })
+        :
+        <Alert color="info">No User Activity</Alert>
+       }
        <br/>
        </div>
       </div>
@@ -38,8 +46,9 @@ class HomeMain extends React.Component {
 
 function mapStateToProps(user) {
   if(user.user.user.starred != null) {
-      const starred = user.user.user.starred
-      return {starred};
+      const starred = user.user.user.starred;
+      const recent = user.user.user.activity;
+      return {starred, recent};
   }
     
 }

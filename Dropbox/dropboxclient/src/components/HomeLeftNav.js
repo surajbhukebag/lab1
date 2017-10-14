@@ -33,9 +33,7 @@ class HomeLeftNav extends React.Component {
           <NavItem>
             <br/>
           </NavItem>
-          <NavItem>
-            <Link to="/files">Group</Link>
-          </NavItem>
+         
         </Nav>       
       </div>
     );

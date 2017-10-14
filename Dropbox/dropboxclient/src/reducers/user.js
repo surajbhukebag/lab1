@@ -37,7 +37,7 @@ const user = (state = initialState, action) => {
             break;   
 
          case USER_SIGNIN :
-                if(action.user) {
+                  if(action.user) {
 
                     return {
                        ...state,
@@ -46,13 +46,14 @@ const user = (state = initialState, action) => {
                                 "pinfo" : action.pinfo,
                                 "eduinfo" : action.eduinfo,
                                 "loggedin" : true,
-                                "starred" : action.starred                                
+                                "starred" : action.starred,
+                                "activity" : action.activity                                
                             }
                     };
 
                 }
                 else {
-
+                    console.log(action.msg);
                     return {
                        ...state,
                        "user":{                            
@@ -137,7 +138,8 @@ const user = (state = initialState, action) => {
                                 "loggedin" : state.user.loggedin,
                                 "pinfo": state.user.pinfo,
                                 "eduinfo" : state.user.eduinfo,
-                                "starred" : action.starred  
+                                "starred" : action.starred,
+                                "activity" : action.activity
                             }
                     };
 

@@ -81,6 +81,7 @@ function mapStateToProps(user) {
   if(user.user != null) {
       const isLoggedIn = user.user.user.loggedin;
       const msg = user.user.user.signinmsg;
+      user.user.user.signinmsg = "";
       return {isLoggedIn, msg};
   }
     

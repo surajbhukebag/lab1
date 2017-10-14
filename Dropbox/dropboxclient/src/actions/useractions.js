@@ -45,6 +45,9 @@ export function userSignin(userDeails) {
 				    		if(resData.code === 502) {
 						    			dispatch(invalidSession()); 
 						    }
+						    else if (resData.code === 500){
+						    	dispatch(invalidSignin(resData));							   	
+						    }
 						    else {
 					    		FAPI.getStarredFiles(resData.user.id)
 							    	.then((rData) => {
@@ -53,7 +56,17 @@ export function userSignin(userDeails) {
 							    		}
 							    		else {
 							    			console.log(rData.starred);
-								        	dispatch(updateSigninUserData(resData, rData)); 
+								        	//dispatch(updateSigninUserData(resData, rData)); 
+
+								        	FAPI.getUserActivity(resData.user.id)
+										    	.then((actData) => {
+										    		if(resData.code === 502) {
+										    			dispatch(invalidSession()); 
+										    		}
+										    		else {
+											        	dispatch(updateSigninUserData(resData, rData, actData)); 						        	
+											    	}
+									  		});	
 								    	}
 					      		});
 
@@ -73,8 +86,15 @@ export function userSignin(userDeails) {
 
 }
 
+function invalidSignin(resData) {
+		return {
+				type: USER_SIGNIN,
+				msg: resData.msg
+			};
+}
+						
 
-export function updateSigninUserData(resData, rData) {
+export function updateSigninUserData(resData, rData, actData) {
 
 	
 	if(resData.code === 200) {
@@ -83,7 +103,8 @@ export function updateSigninUserData(resData, rData) {
 			user: resData.user,
 			pinfo: resData.pinfo,
 			eduinfo: resData.eduinfo,
-			starred: rData.starred
+			starred: rData.starred,
+			activity: actData.activity
 		}
 	}
 	else {
@@ -260,15 +281,25 @@ export function getStarredfilesAndActivity(userId) {
 		    			dispatch(invalidSession()); 
 		    		}
 		    		else {
-			        	dispatch(updateStarredData(resData)); 
+			        	FAPI.getUserActivity(userId)
+					    	.then((rData) => {
+					    		if(resData.code === 502) {
+					    			dispatch(invalidSession()); 
+					    		}
+					    		else {
+						        	dispatch(updateStarredData(resData, rData)); 						        	
+						    	}
+				  		});	
+
 			    	}
 	  		});	
 	}
 }
 
-function updateStarredData(resData) {
+function updateStarredData(resData, rData) {
 	return {
 		type: USER_STAR_ACT,
-		starred : resData.starred
+		starred : resData.starred,
+		activity : rData.activity
 	}
 }

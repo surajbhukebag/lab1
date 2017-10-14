@@ -193,3 +193,23 @@ export const starFile = (payload) =>
             console.log("Star a file failed");
             return error;
     });
+
+
+
+export const getUserActivity = (payload) =>  
+    fetch(`${api}/userActivity/`+payload, {
+        method: 'GET',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include'
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Get userActivity failed");
+            return error;
+    });

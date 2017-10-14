@@ -7,6 +7,7 @@ export const FILE_LINK = "FILE_LINK";
 export const FILE_SHARE = "FILE_SHARE";
 export const FILE_SHARE_LIST = "FILE_SHARE_LIST";
 export const FILE_STAR = "FILE_STAR";
+export const FOLDER_SHARE_LIST = "FOLDER_SHARE_LIST";
 
 
 export function listfiles(dir, email, msg) {
@@ -209,3 +210,52 @@ export function starAFile(fileId, path, pwd, userId, star) {
 
 }
 
+export function listSharedfiles(dir, email, owner) {
+
+	let req = {dir:dir, id:owner, user:email};
+
+	return function(dispatch) {
+		return  API.listSharedDir(req)
+			    	.then((resData) => {
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+			    			console.log("Files : "+resData.files.length);
+			    			dispatch(updateSharedFolders(resData, dir, owner)); 	
+			    		}
+				        
+	      		});
+	  	};
+
+}
+
+
+function updateSharedFolders(resData, dir, owner) {
+	console.log("shared files "+resData.files.length);
+	return {
+		type: FOLDER_SHARE_LIST,
+		folders: resData.files,
+		sharedDir : dir,
+		sharedDirOwner : owner
+	}
+}
+
+export function uploadToSharedFolder(data, sharedDir, sharedDirOwner, userId) {
+
+	return function(dispatch) {
+		return  API.uploadfileToSharedFolder(data)
+			    	.then((resData) => {
+			    		if(resData.code === 502) {
+			    			dispatch(invalidSession()); 
+			    		}
+			    		else {
+			    			console.log("dir : "+sharedDir);
+			    			console.log("User : "+userId);
+			    			console.log("owner :"+sharedDirOwner);
+				        	dispatch(listSharedfiles(sharedDir, userId, sharedDirOwner)); 
+				    	}
+	      		});
+	  	};	
+
+}

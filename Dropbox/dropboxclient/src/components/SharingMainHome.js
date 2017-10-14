@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane, Card, CardTitle, CardText, Row, Col } from 'reactstrap';
+import { Alert, TabContent, TabPane, Card, CardTitle, CardText, Row, Col } from 'reactstrap';
 import classnames from 'classnames';
 import text from './../images/1.svg';
 import logo from './../images/2.svg';
-import Item from './Item';
+import SharedItem from './SharedItem';
 import { Route, withRouter } from 'react-router-dom';
 import {connect} from 'react-redux';
 
@@ -75,10 +75,10 @@ class SharingMainHome extends React.Component {
                       this.props.sharedfolders.map((file) => {
                       
                         return(
-                              <NavLink href="#"> <Item file={file}/> </NavLink>
+                              <NavLink href="#"> <SharedItem file={file}/> </NavLink>
                           );
                       
-                      }) : ''       
+                      }) : <Alert color="info">No Shared Folders</Alert>       
                    }
 
               </Col>
@@ -97,10 +97,10 @@ class SharingMainHome extends React.Component {
                       this.props.sharedfiles.map((file) => {
                       
                         return(
-                              <NavLink href="#"> <Item file={file}/> </NavLink>
+                              <NavLink href="#"> <SharedItem file={file}/> </NavLink>
                           );
                       
-                      }) : ''       
+                      }) : <Alert color="info">No Shared Files</Alert>       
                    }
               </Col>
             </Row>
@@ -118,10 +118,10 @@ class SharingMainHome extends React.Component {
                       this.props.sharedlinks.map((file) => {
                       
                         return(
-                              <NavLink href="#"> <Item file={file}/> </NavLink>
+                              <NavLink href="#"> <SharedItem file={file} /> </NavLink>
                           );
                       
-                      }) : ''       
+                      }) : <Alert color="info">No Links Created</Alert>       
                    }
               </Col>
             </Row>

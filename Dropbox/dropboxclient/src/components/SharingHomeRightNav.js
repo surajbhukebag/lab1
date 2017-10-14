@@ -5,11 +5,11 @@ import { Input, Button, Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavIt
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import logo from './../images/user.png';
 import { Link } from 'react-router-dom';
-import {fileUpload} from "../actions/files";
+import {uploadToSharedFolder} from "../actions/files";
 import {signout} from "../actions/useractions";
 import NewFolder from "./NewFolder";
 
-class HomeRightNav extends React.Component {
+class SharingHomeRightNav extends React.Component {
 
   constructor(props) {
     super(props);
@@ -29,11 +29,15 @@ class HomeRightNav extends React.Component {
 
   
   handleFileUpload = (event) => {
-      const data = new FormData();
-      data.append('file', event.target.files[0]);
-      data.append('name', this.props.email);
-      data.append('path', this.props.pwd);
-      this.props.upload(data, this.props.email, this.props.pwd, this.props.userId);
+      if(this.props.shareDir !== '/' && this.props.sharedDirOwner !== "") {
+        const data = new FormData();
+        data.append('file', event.target.files[0]);
+        data.append('path', this.props.shareDir);
+        data.append('owner', this.props.sharedDirOwner);
+        data.append('uploader', this.props.userId);
+        this.props.uploadToSharedFolder(data,  this.props.shareDir, this.props.sharedDirOwner, this.props.userId);  
+      }
+      
   }
 
 
@@ -80,7 +84,7 @@ class HomeRightNav extends React.Component {
               <NavItem>
                 <NavLink href="#">New Shared File</NavLink>
               </NavItem>
- 
+
            </Nav>       
           </div>
       </div>
@@ -90,7 +94,7 @@ class HomeRightNav extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        upload : (data, email, pwd, userId) => dispatch(fileUpload(data, email, pwd, userId)),
+        uploadToSharedFolder : (data, sharedDir, sharedDirOwner, userId) => dispatch(uploadToSharedFolder(data, sharedDir, sharedDirOwner, userId)),
         signout : () => dispatch(signout())
     };
 }
@@ -101,14 +105,15 @@ function mapStateToProps(user) {
       const userId = user.user.user.basic.id;
       const fname = user.user.user.basic.fname;
       const loggedin = user.user.user.loggedin;
-      let pwd = "/";
+      let pwd = "/", shareDir, sharedDirOwner;
       if(user.files.files != null ) {
         pwd = user.files.files.pwd;
+        shareDir = user.files.files.sharedDir;
+        sharedDirOwner = user.files.files.sharedDirOwner
       }
-      console.log("pwd : "+pwd);     
-      return {email, fname, loggedin, pwd, userId};
+      return {email, fname, loggedin, pwd, userId, shareDir, sharedDirOwner};
   }
     
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps) (HomeRightNav));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps) (SharingHomeRightNav));

@@ -39,6 +39,22 @@ export const fileupload = (payload) =>
             return error;
     });
 
+export const uploadfileToSharedFolder = (payload) =>  
+    fetch(`${api}/uploadfileToSharedFolder`, {
+        method: 'POST',
+        credentials:'include',
+        body: payload        
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("File Upload failed");
+            return error;
+    });
+
+
 export const createFolder = (payload) =>  
     fetch(`${api}/createFolder`, {
         method: 'POST',
@@ -211,5 +227,24 @@ export const getUserActivity = (payload) =>
     })
         .catch(error => {
             console.log("Get userActivity failed");
+            return error;
+    });
+
+export const listSharedDir = (payload) =>  
+    fetch(`${api}/listSharedDir`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("List shared file failed");
             return error;
     });

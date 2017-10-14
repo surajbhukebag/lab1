@@ -4,7 +4,7 @@ import { Modal, Button } from 'react-bootstrap';
 import {connect} from 'react-redux';
 import HomeLeftNav from './HomeLeftNav';
 import SharingMainHome from './SharingMainHome';
-import HomeRightNav from './HomeRightNav';
+import SharingHomeRightNav from './SharingHomeRightNav';
 
 class SharingHome extends Component {
 
@@ -17,7 +17,7 @@ class SharingHome extends Component {
         <div className="row">
           <div className="col-md-2"><HomeLeftNav /></div>
           <div className="col-md-8"><SharingMainHome /></div>
-          <div className="col-md-2"><HomeRightNav /></div>
+          <div className="col-md-2"><SharingHomeRightNav /></div>
         </div>
 
       </div>

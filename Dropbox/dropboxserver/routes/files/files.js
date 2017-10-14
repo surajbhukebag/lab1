@@ -19,6 +19,35 @@ function listdir(req,res)
 	console.log("path : "+dir);
 	console.log("created by :"+createdBy);
 
+	if(dir !== '/' && dir.lastIndexOf('/') === 0) {
+		let n = dir.substring(1);
+		let getFodlerQuery = "select * from files where createdBy = ? and name = ? and path = ?";
+		mysql.getFileByPathAndName(function(r, err){
+			if(!err) {
+				let checkFileActivityQuery = "select * from fileactivity where userId = ? and fileId = ?";
+				mysql.checkFileActivity(function(rr, err) {
+					
+					if(!err) {
+						
+						if(rr.length === 0) {
+							let addToFileActivityQuery  = "insert into fileactivity (dateCreated, userId, fileId) values (?,?,?)";
+							mysql.addToFileActivity(function(err){
+							}, addToFileActivityQuery, createdBy, r[0].id);	
+						}
+						else {
+							
+							let updateFileActivityQuery  = "update fileactivity set dateCreated = ? where userId = ? and fileId = ?";
+							mysql.addToFileActivity(function(err){
+							}, updateFileActivityQuery, createdBy, r[0].id);	
+						}
+					}
+				}, checkFileActivityQuery, createdBy, r[0].id);				
+			}
+			
+		}, getFodlerQuery, createdBy, n, "/");
+							
+	}
+
 	let filesQuery = "select * from files where createdBy = ? and path = ?";
 	mysql.getFileList(function(files, err) {
 
@@ -32,6 +61,7 @@ function listdir(req,res)
 				else {
 					path = files[i].path+"/"+files[i].name;
 				}
+
 				result.push({fileId:files[i].id, path: path, isDirectory: files[i].isDirectory, name:files[i].name, starred:files[i].isStarred});
 			}
 			let responseJson = {code:200, files:result}
@@ -225,6 +255,25 @@ function generateLink(req, res) {
 				mysql.getUserFile(function(r, err) {
 					if(!err) {
 
+						let checkFileActivityQuery = "select * from fileactivity where userId = ? and fileId = ?";
+						mysql.checkFileActivity(function(rr, err) {
+							
+							if(!err) {
+								
+								if(rr.length === 0) {
+									let addToFileActivityQuery  = "insert into fileactivity (dateCreated, userId, fileId) values (?,?,?)";
+									mysql.addToFileActivity(function(err){
+									}, addToFileActivityQuery, result[0].id, r[0].id);	
+								}
+								else {
+									
+									let updateFileActivityQuery  = "update fileactivity set dateCreated = ? where userId = ? and fileId = ?";
+									mysql.addToFileActivity(function(err){
+									}, updateFileActivityQuery, result[0].id, r[0].id);	
+								}
+							}
+						}, checkFileActivityQuery, result[0].id, r[0].id);		
+
 						let checkLinkQuery = "select * from filelink where fileId = ?";
 						mysql.getFileLink(function(rs, err) {
 
@@ -316,6 +365,27 @@ function share(req, res) {
 					for(var i = 0; i < sharedWithList.length; i++) {
 						usermysql.getUser(function(uniqueUsername, err, sharedWith) {
 							if(!err) {
+
+								let checkFileActivityQuery = "select * from fileactivity where userId = ? and fileId = ?";
+								mysql.checkFileActivity(function(rr, err) {
+									
+									if(!err) {
+										
+										if(rr.length === 0) {
+											let addToFileActivityQuery  = "insert into fileactivity (dateCreated, userId, fileId) values (?,?,?)";
+											mysql.addToFileActivity(function(err){
+											}, addToFileActivityQuery, uid, fileId);	
+										}
+										else {
+											
+											let updateFileActivityQuery  = "update fileactivity set dateCreated = ? where userId = ? and fileId = ?";
+											mysql.addToFileActivity(function(err){
+											}, updateFileActivityQuery, uid, fileId);	
+										}
+									}
+								}, checkFileActivityQuery, uid, fileId);		
+
+
 								mysql.createSharedFile(function(succ, err) {
 									if(!err) {
 										res.send(JSON.stringify({code:200, msg:"File/Folder is shared"}));
@@ -443,6 +513,12 @@ function sharedFileLinks(req, res) {
 
 function starAFile(req, res) {
 
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+
 	let createdBy = req.param("id");
 	let p = req.param("path");
 	let index = p.lastIndexOf("/");
@@ -463,6 +539,32 @@ function starAFile(req, res) {
 	let starAFileQuery = "update files set isStarred = ? where createdBy = ? and name = ? and path = ?";
 	mysql.starFile(function(result, err){
 		if(!err) {
+
+			let fileQuery = "select * from files where createdBy = ? and name = ? and path = ?";
+			mysql.getUserFile(function(r, err) {
+
+				let checkFileActivityQuery = "select * from fileactivity where userId = ? and fileId = ?";
+				mysql.checkFileActivity(function(rr, err) {
+					
+					if(!err) {
+						
+						if(rr.length === 0) {
+							let addToFileActivityQuery  = "insert into fileactivity (dateCreated, userId, fileId) values (?,?,?)";
+							mysql.addToFileActivity(function(err){
+							}, addToFileActivityQuery, createdBy, r[0].id);	
+						}
+						else {
+							
+							let updateFileActivityQuery  = "update fileactivity set dateCreated = ? where userId = ? and fileId = ?";
+							mysql.addToFileActivity(function(err){
+							}, updateFileActivityQuery, createdBy, r[0].id);	
+						}
+					}
+				}, checkFileActivityQuery, createdBy, r[0].id);
+
+			}, fileQuery, createdBy, name, path);
+
+
 			if(isStarred) {
 				res.send(JSON.stringify({code:200, msg:"File/Fodler starred."}));
 			}
@@ -475,6 +577,41 @@ function starAFile(req, res) {
 			res.send(JSON.stringify({code:500, msg:"Unable to star file/fodler."}));
 		}
 	}, starAFileQuery, isStarred, createdBy, name, path);
+
+}
+}
+
+
+function userActivity(req, res) {
+
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+
+	let userId = req.param('userId');
+
+	let userActivityQuery = "SELECT f.id as id, f.name as name, f.path as path , l.dateCreated as dateCreated, f.isDirectory as dir, f.isStarred as star FROM files f INNER JOIN fileactivity l on f.id = l.fileId where l.userId = ? order by l.dateCreated desc limit 7";
+
+	mysql.getUserActivity(function(result, err){
+		if(!err) {
+
+			let files = [];
+
+			for(var i = 0; i < result.length; i++) {		
+				
+				files.push({name:result[i].name, path:result[i].path+result[i].name,starred:result[i].star, isDirectory:result[i].dir, fileId:result[i].id, date:result[i].dateCreated});			
+
+			}
+
+			res.send(JSON.stringify({code:200, activity:files}));
+		}
+		else {
+			res.send(JSON.stringify({code:500, msg:"Unable to get User Activity."}));	
+		}
+	}, userActivityQuery, userId);
+	}
 }
 
 exports.listdir = listdir;
@@ -486,3 +623,4 @@ exports.share = share;
 exports.sharedFiles = sharedFiles;
 exports.sharedFileLinks = sharedFileLinks;
 exports.starAFile = starAFile;
+exports.userActivity = userActivity;

@@ -144,6 +144,26 @@ function filedownload(req, res) {
 		usermysql.getUserById(function(user, err) {
 			console.log("users : "+user)
 			if(!err) {
+
+				let checkFileActivityQuery = "select * from fileactivity where userId = ? and fileId = ?";
+				mysql.checkFileActivity(function(rr, err) {					
+					if(!err) {
+						
+						if(rr.length === 0) {
+							let addToFileActivityQuery  = "insert into fileactivity (dateCreated, userId, fileId) values (?,?,?)";
+							mysql.addToFileActivity(function(err){
+							}, addToFileActivityQuery,  user[0].id, file[0].id);	
+						}
+						else {
+							
+							let updateFileActivityQuery  = "update fileactivity set dateCreated = ? where userId = ? and fileId = ?";
+							mysql.addToFileActivity(function(err){
+							}, updateFileActivityQuery,  user[0].id, file[0].id);	
+						}
+					}
+				}, checkFileActivityQuery, user[0].id, file[0].id);	
+
+
 				let filepath = "files/"+user[0].email+"/"+file[0].path+"/"+file[0].name;
 				if(file[0].path === '/') {
 					filepath = "files/"+user[0].email+"/"+file[0].path+file[0].name;

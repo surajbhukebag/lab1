@@ -75,7 +75,7 @@ app.post('/generateLink',cors(corsOptions), files.generateLink);
 app.post('/share',cors(corsOptions), files.share);
 app.post('/sharedFiles',cors(corsOptions), files.sharedFiles);
 app.post('/sharedFileLinks',cors(corsOptions), files.sharedFileLinks);
-
+app.get('/userActivity/:userId', cors(corsOptions), files.userActivity);
 
 
 http.createServer(app).listen(app.get('port'), function(){

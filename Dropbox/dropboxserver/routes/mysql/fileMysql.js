@@ -78,6 +78,26 @@ function getFileById(callback, getFilesQuery, id){
 
 }
 
+function getFileByPathAndName(callback, getFodlerQuery, userId, name, path){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(getFodlerQuery, [userId, name, path], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{					
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+
 function generateLink(callback, generateLinkQuery, fileId, createdBy){
 	
 	var connection=mysql.getConnection();
@@ -262,6 +282,49 @@ function deleteFile(callback, deleteFileQuery, name, path, createdBy){
 
 }
 
+function addToFileActivity(callback, addToFileActivityQuery, userId, fileId) {
+
+	var connection=mysql.getConnection();
+
+	connection.query(addToFileActivityQuery, [new Date().getTime(), userId, fileId], function(err, result) {
+		callback(err);
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+function checkFileActivity(callback, checkFileActivityQuery, userId, fileId) {
+
+	var connection=mysql.getConnection();
+
+	connection.query(checkFileActivityQuery, [userId, fileId], function(err, result) {
+		callback(result, err);
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
+
+function getUserActivity(callback, userActivityQuery, userId){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(userActivityQuery, userId, function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{				
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
 
 
 exports.storeFileDetails = storeFileDetails;
@@ -277,3 +340,7 @@ exports.getSharedLinkFiles = getSharedLinkFiles;
 exports.starFile = starFile;
 exports.getFileList = getFileList;
 exports.deleteFile = deleteFile;
+exports.addToFileActivity = addToFileActivity;
+exports.getFileByPathAndName = getFileByPathAndName;
+exports.checkFileActivity = checkFileActivity;
+exports.getUserActivity = getUserActivity;

@@ -82,11 +82,15 @@ function signin(req, res) {
 
 						}
 					}, getPInfoQuery, result[0].id);		       		
+		       }
+		       else {
+		       	res.send(JSON.stringify({ code: 500, loggedIn:false, msg:"Invalid Password"}));	 
 		       }	              
 		       
 		   	});
 		}
 		else {
+			console.log("dd");
 			res.send(JSON.stringify({ code: 500, loggedIn:false, msg:"Invalid Username"}));	  
 		}
 

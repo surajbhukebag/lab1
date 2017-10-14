@@ -83,6 +83,73 @@ function uploadfile(req,res){
 	}
 }
 
+
+function uploadfileToSharedFolder(req,res){
+
+	
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+	
+	upload(req, res, function(err) {
+		if (err) {
+			res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
+		}
+		else {
+			let name = req.files[0].originalname
+			let owner = req.body.owner;
+			let createdBy = req.body.uploader;
+
+			let userQuery = "select * from user where id = ?";
+			usermysql.getUserById(function(user, err) {
+				if(!err && user.length > 0) {
+					let ownerEmail = user[0].email;
+					mv("./files/" + name, "./files/" + ownerEmail + req.body.path +"/"+ name, function(err) {
+
+						if (err) {
+							console.log(err);
+							res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
+						}
+						else {
+
+
+							let storeFileQuery = "insert into files (name, path, isDirectory, createdBy, dateCreated, isStarred, link) values (?,?,?,?,?,?,?)";
+								require('crypto').randomBytes(20, function(err, buffer) {
+									var token = buffer.toString('hex');
+
+									mysql.storeFileDetails(function(rss, err, uid) {
+										if(!err) {
+											let responseJson = {code:200, msg:"File is uploaded"}
+											res.send(JSON.stringify(responseJson));
+										}
+										else {
+											console.log(err);
+											res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
+										}
+
+									}, storeFileQuery, req.files[0].originalname, req.body.path, 0, createdBy, new Date().getTime(), token);
+
+
+								});								
+						}				
+
+					});
+
+				}
+				else {
+					console.log(err);
+					res.send(JSON.stringify({code:500, msg:"File Upload Failed"}));
+				}
+			}, userQuery, owner);
+
+						
+		}
+	});
+	}
+}
+
 function getDownloadLink(req, res) {
 
 	res.setHeader('Content-Type', 'application/json');
@@ -126,6 +193,46 @@ function getDownloadLink(req, res) {
 	}
 
 }
+
+
+
+function getSharedFileDownloadLink(req, res) {
+
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+		let userId = req.param("userId");
+		let p = req.param("path");
+		let index = p.lastIndexOf("/");
+		let path = "";
+		if(index === 0) {
+			path = "/";
+		}
+		else {
+			path = p.substring(0, index);
+		}
+		let name = p.substring(index+1);
+
+
+		let userFilesQuery = "select * from files where createdBy = ? and name = ? and path = ?";
+
+		mysql.getUserFile(function(r, err) {
+			if(!err) {
+				res.send(JSON.stringify({code:200, link:"http://localhost:3001/filedownload/"+r[0].link}));					
+			}
+			else {
+				res.send(JSON.stringify({code:500, msg:"Unable to fetch file data."}));
+			}
+
+		}, userFilesQuery, userId, name, path);			
+			
+
+	}
+
+}
+
 
 
 function filedownload(req, res) {
@@ -254,3 +361,5 @@ exports.uploadfile = uploadfile;
 exports.filedownload = filedownload;
 exports.getDownloadLink = getDownloadLink;
 exports.downloadSharedFile = downloadSharedFile;
+exports.getSharedFileDownloadLink = getSharedFileDownloadLink;
+exports.uploadfileToSharedFolder = uploadfileToSharedFolder;

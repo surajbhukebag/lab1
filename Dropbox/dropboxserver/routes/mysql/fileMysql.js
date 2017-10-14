@@ -97,6 +97,25 @@ function getFileByPathAndName(callback, getFodlerQuery, userId, name, path){
 
 }
 
+function getSharedFileList(callback, filesQuery, createdBy, dir){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(filesQuery, [dir, createdBy, createdBy], function(err, result) {
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{					
+			callback(result, err);						
+		}
+	});
+	console.log("\nConnection closed..");
+	connection.end();
+
+}
+
 
 function generateLink(callback, generateLinkQuery, fileId, createdBy){
 	
@@ -344,3 +363,4 @@ exports.addToFileActivity = addToFileActivity;
 exports.getFileByPathAndName = getFileByPathAndName;
 exports.checkFileActivity = checkFileActivity;
 exports.getUserActivity = getUserActivity;
+exports.getSharedFileList = getSharedFileList;

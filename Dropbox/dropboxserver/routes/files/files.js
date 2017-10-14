@@ -75,6 +75,86 @@ function listdir(req,res)
 	}
 }
 
+function listSharedDir(req,res)
+{
+
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+	var response = "";
+	let isRoot = true;
+	console.log("dir : "+req.param('dir'));
+	let dir = req.param('dir');
+	let createdBy = req.param('id');
+	let loggedInUser = req.param('user');
+
+	console.log("path : "+dir);
+	console.log("name : "+dir);
+	console.log("created by :"+createdBy);
+
+	if(dir !== '/' && dir.lastIndexOf('/') === 0) {
+		let n = dir.substring(1);
+		let getFodlerQuery = "select * from files where createdBy = ? and name = ? and path = ?";
+		mysql.getFileByPathAndName(function(r, err){
+			if(!err) {
+				if(createdBy == loggedInUser) {
+
+					let checkFileActivityQuery = "select * from fileactivity where userId = ? and fileId = ?";
+					mysql.checkFileActivity(function(rr, err) {
+						
+						if(!err) {
+							
+							if(rr.length === 0) {
+								let addToFileActivityQuery  = "insert into fileactivity (dateCreated, userId, fileId) values (?,?,?)";
+								mysql.addToFileActivity(function(err){
+								}, addToFileActivityQuery, createdBy, r[0].id);	
+							}
+							else {
+								
+								let updateFileActivityQuery  = "update fileactivity set dateCreated = ? where userId = ? and fileId = ?";
+								mysql.addToFileActivity(function(err){
+								}, updateFileActivityQuery, createdBy, r[0].id);	
+							}
+						}
+					}, checkFileActivityQuery, createdBy, r[0].id);
+
+				}
+				
+			}
+			
+		}, getFodlerQuery, createdBy, n, "/");
+							
+	}
+
+	let filesQuery = "select * from files where path = ? and (createdBy = ? or createdBy in (select sharedWith from sharedfiles where sharedBy = ?))";
+	mysql.getSharedFileList(function(files, err) {
+
+		if(!err) {
+			var result = [];
+			for(var i = 0; i < files.length; i++) {
+				let path = "";
+				if(files[i].path === '/') {
+					path = files[i].path+files[i].name;
+				}
+				else {
+					path = files[i].path+"/"+files[i].name;
+				}
+
+				result.push({owner:files[i].createdBy, fileId:files[i].id, path: path, isDirectory: files[i].isDirectory, name:files[i].name, starred:files[i].isStarred});
+			}
+			let responseJson = {code:200, files:result}
+			res.send(JSON.stringify(responseJson));		
+		}
+		else {
+			res.send(JSON.stringify({code:500,msg:"Unable to fetch files."}));	
+		}
+	}, filesQuery, createdBy, dir);
+}
+	
+}
+
 function createFolder(req,res)
 {
 	
@@ -364,7 +444,8 @@ function share(req, res) {
 					let shareFileQuery = "insert into sharedfiles (fileId, sharedBy, sharedWith, dateCreated) values (?, ?, ?, ?)";
 					for(var i = 0; i < sharedWithList.length; i++) {
 						usermysql.getUser(function(uniqueUsername, err, sharedWith) {
-							if(!err) {
+							console.log("ssss : "+sharedWith.length);
+							if(!err && sharedWith.length !== 0) {
 
 								let checkFileActivityQuery = "select * from fileactivity where userId = ? and fileId = ?";
 								mysql.checkFileActivity(function(rr, err) {
@@ -395,6 +476,7 @@ function share(req, res) {
 									}
 
 								}, shareFileQuery, fileId, uid, sharedWith[0].id);
+
 								
 							}
 							else {
@@ -438,10 +520,10 @@ function sharedFiles(req, res) {
 					for(var i = 0; i < f.length; i++) {
 
 						if(f[i].isDirectory) {
-							folders.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy});
+							folders.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:true});
 						}
 						else {
-							files.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy});	
+							files.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:false});	
 						}						
 
 					}
@@ -624,3 +706,4 @@ exports.sharedFiles = sharedFiles;
 exports.sharedFileLinks = sharedFileLinks;
 exports.starAFile = starAFile;
 exports.userActivity = userActivity;
+exports.listSharedDir = listSharedDir;

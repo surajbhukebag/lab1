@@ -71,7 +71,7 @@ function signin(req, res) {
 									res.send(JSON.stringify({ code: 500, msg:"Unable to access user data.Please try later."}));
 								}
 								else {
-									if(r.length > 0) {
+									if(ra.length > 0) {
 										eduInfo = {college:ra[0].collegeName, sdate:ra[0].startDate, edate:ra[0].endDate, major:ra[0].major, gpa:ra[0].gpa};
 									}
 									code = 200;		        	
@@ -250,8 +250,58 @@ function userEduInfo(req, res) {
 }
 
 
+function userIntInfo(req, res) {
+
+	res.setHeader('Content-Type', 'application/json');
+	if(req.session.email === undefined) {
+		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
+	}
+	else {
+
+	let userId = req.param("userId");
+	let comment = req.param("comment");
+	let interest = req.param("interest");
+
+	let inteQuery = "select id from interests where name = ?";
+	mysql.getInterest(function(result, err){
+
+		if(!err && result.length > 0) {
+
+			let query = "insert into userinterests (interestId, comment, userId) values (?,?,?)";
+			mysql.addUserInterest(function(userint, err){
+				if(!err) {
+					let getAllInterests = "SELECT i.name as name, u.comment as comment FROM userinterests u INNER JOIN interests i on u.interestId = i.id where u.userId = ?";
+					mysql.getAllInterests(function(ui, err) {
+						if(!err) {
+							let responseJson = [];
+							for(var i = 0; i < ui.length; i++) {
+								responseJson.push({name:ui[i].name, comment:ui[i].comment});
+							}
+							res.send(JSON.stringify({ code: 200, interests: responseJson}));
+						}
+						else {
+							res.send(JSON.stringify({ code: 500, msg:"Unable to access user interest data.Please try later."}));
+						}
+
+					}, getAllInterests, userId);
+				}
+				else {
+					res.send(JSON.stringify({ code: 500, msg:"Unable to access user interest data.Please try later."}));	
+				}
+			}, query, result[0].id, comment, userId);
+
+		}
+		else {
+			res.send(JSON.stringify({ code: 500, msg:"Unable to access user interest data.Please try later."}));	
+		}
+	}, inteQuery, interest);
+
+	}
+}
+
 exports.signup = signup;
 exports.signin = signin;
 exports.signout = signout;
 exports.userPersonalInfo = userPersonalInfo;
 exports.userEduInfo = userEduInfo;
+exports.userIntInfo = userIntInfo;

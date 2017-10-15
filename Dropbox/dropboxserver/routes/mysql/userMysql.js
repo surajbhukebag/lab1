@@ -235,6 +235,71 @@ function userEduinfo(callback, userEduinfoQuery, req, userId){
 
 }
 
+function getInterest(callback,getInterestQuery, name){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(getInterestQuery, name, function(err, result) {
+			
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{			
+			
+			callback(result, err);
+				
+		}
+		});
+		console.log("\nConnection closed..");
+		connection.end();
+
+}
+
+function addUserInterest(callback,userInterestQuery, interestId, comment, userId ){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(userInterestQuery, [interestId, comment, userId], function(err, result) {
+			
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{			
+			
+			callback(result, err);
+				
+		}
+		});
+		console.log("\nConnection closed..");
+		connection.end();
+
+}
+
+function getAllInterests(callback,allUserInterestQuery, userId ){
+	
+	var connection=mysql.getConnection();
+
+	connection.query(allUserInterestQuery, userId, function(err, result) {
+			
+		if(err){
+			console.log(err);
+			callback(null, err);
+		}
+		else 
+		{			
+			
+			callback(result, err);
+				
+		}
+		});
+		console.log("\nConnection closed..");
+		connection.end();
+
+}
 
 exports.userSignUp = userSignUp;
 exports.checkUsername = checkUsername;
@@ -246,3 +311,6 @@ exports.userEduinfoUpdate = userEduinfoUpdate;
 exports.userEduinfo = userEduinfo;
 exports.getUser = getUser;
 exports.getUserById = getUserById;
+exports.getInterest = getInterest;
+exports.addUserInterest = addUserInterest;
+exports.getAllInterests = getAllInterests;

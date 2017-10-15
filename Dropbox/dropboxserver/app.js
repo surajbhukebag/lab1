@@ -61,6 +61,7 @@ app.post('/signout',cors(corsOptions), user.signout);
 
 app.post('/userPersonalInfo', cors(corsOptions), user.userPersonalInfo);
 app.post('/userEduInfo', cors(corsOptions), user.userEduInfo);
+app.post('/userIntInfo', cors(corsOptions), user.userIntInfo);
 
 app.post('/listdir',cors(corsOptions), files.listdir);
 app.post('/listSharedDir',cors(corsOptions), files.listSharedDir);
@@ -81,6 +82,9 @@ app.post('/sharedFileLinks',cors(corsOptions), files.sharedFileLinks);
 app.get('/userActivity/:userId', cors(corsOptions), files.userActivity);
 
 
-http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+
+module.exports = server;

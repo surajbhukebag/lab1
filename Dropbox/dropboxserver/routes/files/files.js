@@ -569,7 +569,7 @@ function sharedFileLinks(req, res) {
 
 					for(var i = 0; i < f.length; i++) {
 						
-						links.push({name:f[i].name, path:f[i].path+f[i].name,link:f[i].link,owner: result[0].id});											
+						links.push({name:f[i].name, path:f[i].path+f[i].name,link:"http://localhost:3001/downloadSharedFile/"+f[i].link,owner: result[0].id});											
 
 					}
 	

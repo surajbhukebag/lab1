@@ -8,7 +8,6 @@ import UserPersonalInfo from './UserPersonalInfo';
 import UserEducation from './UserEducation';
 import UserInterest from './UserInterest';
 import Item from './Item';
-import {PieChart} from 'react-easy-chart';
 
 export default class UserSettingsHome extends React.Component {
 
@@ -101,13 +100,7 @@ export default class UserSettingsHome extends React.Component {
                 <br />
                 User Life Events
                 <br />
-                <PieChart
-                  data={[
-                    { key: 'A', value: 100 },
-                    { key: 'B', value: 200 },
-                    { key: 'C', value: 50 }
-                  ]}
-                />
+
               </Col>
             </Row>
           </TabPane>

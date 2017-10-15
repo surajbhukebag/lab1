@@ -7,6 +7,7 @@ export const USER_SIGNIN = 'USER_SIGNIN';
 export const USER_SIGNOUT = 'USER_SIGNOUT';
 export const USER_PINFO = 'USER_PINFO';
 export const USER_EDUINFO = 'USER_EDUINFO';
+export const USER_INTINFO = 'USER_INTINFO';
 export const USER_STAR_ACT = 'USER_STAR_ACT';
 
 
@@ -302,4 +303,29 @@ function updateStarredData(resData, rData) {
 		starred : resData.starred,
 		activity : rData.activity
 	}
+}
+
+
+export function userInterestInfo(data, userId) {
+	let req = {userId:userId, interest:data.interest, comment:data.comment};
+
+	return function(dispatch) {
+			return  API.userIntInfo(req)
+				    	.then((resData) => {
+				    		if(resData.code === 502) {
+				    			dispatch(invalidSession()); 
+				    		}
+				    		else {
+					        	dispatch(updateUserIntData(resData));				          
+					    	}
+		      		});
+		};
+
+}
+
+function updateUserIntData(resData) {
+	return {
+		type: USER_INTINFO,
+		interests: resData.interests
+	};
 }

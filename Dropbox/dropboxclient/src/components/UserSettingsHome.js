@@ -6,7 +6,9 @@ import text from './../images/1.svg';
 import logo from './../images/2.svg';
 import UserPersonalInfo from './UserPersonalInfo';
 import UserEducation from './UserEducation';
+import UserInterest from './UserInterest';
 import Item from './Item';
+import {PieChart} from 'react-easy-chart';
 
 export default class UserSettingsHome extends React.Component {
 
@@ -88,22 +90,24 @@ export default class UserSettingsHome extends React.Component {
          <TabPane tabId="3">
             <Row>
               <Col sm="12">
-                <Card body>
-                  <CardTitle>Special Title Treatment 2</CardTitle>
-                  <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
+                <br />
+                <UserInterest />
               </Col>
             </Row>
           </TabPane>
           <TabPane tabId="4">
             <Row>
               <Col sm="12">
-                <Card body>
-                  <CardTitle>Special Title Treatment 3</CardTitle>
-                  <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
+                <br />
+                User Life Events
+                <br />
+                <PieChart
+                  data={[
+                    { key: 'A', value: 100 },
+                    { key: 'B', value: 200 },
+                    { key: 'C', value: 50 }
+                  ]}
+                />
               </Col>
             </Row>
           </TabPane>

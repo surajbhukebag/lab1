@@ -1,4 +1,4 @@
-import {USER_SIGNUP, USER_SIGNIN, USER_SIGNOUT, USER_PINFO, USER_EDUINFO, USER_STAR_ACT} from "../actions/useractions";
+import {USER_SIGNUP, USER_SIGNIN, USER_SIGNOUT, USER_PINFO, USER_EDUINFO, USER_STAR_ACT, USER_INTINFO} from "../actions/useractions";
 
 const initialState = {
        
@@ -94,7 +94,11 @@ const user = (state = initialState, action) => {
                                 "basic":state.user.basic,
                                 "loggedin":state.user.loggedin,
                                 "eduinfo" : state.user.eduinfo,
-                                "pinfo": action.pinfo
+                                "pinfo": action.pinfo,
+                                 "interests" : state.user.interests,
+                                "starred" : state.user.starred,
+                                "activity" : state.user.activity
+
                             }
                     };
 
@@ -115,6 +119,9 @@ const user = (state = initialState, action) => {
                                 "basic":state.user.basic,
                                 "loggedin":state.user.loggedin,
                                 "pinfo": state.user.pinfo,
+                                 "interests" : state.user.interests,
+                                "starred" : state.user.starred,
+                                "activity" : state.user.activity,
                                 "eduinfo" : action.eduinfo
                             }
                     };
@@ -138,8 +145,34 @@ const user = (state = initialState, action) => {
                                 "loggedin" : state.user.loggedin,
                                 "pinfo": state.user.pinfo,
                                 "eduinfo" : state.user.eduinfo,
+                                   "interests" : state.user.interests,
                                 "starred" : action.starred,
                                 "activity" : action.activity
+                            }
+                    };
+
+                }
+                else {
+                    return {
+                        ...state
+                    }
+                }               
+
+                break;
+
+                case USER_INTINFO :
+                if(action.interests) {
+              
+                    return {
+                       ...state,
+                       "user":{
+                                "basic": state.user.basic,
+                                "loggedin" : state.user.loggedin,
+                                "pinfo": state.user.pinfo,
+                                "eduinfo" : state.user.eduinfo,
+                                "starred" : state.user.starred,
+                                "activity" : state.user.activity,
+                                "interests" : action.interests
                             }
                     };
 

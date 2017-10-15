@@ -41,19 +41,8 @@ class ShareFileButton extends React.Component {
   }
 
 
-  handleDownload() {
-        fetch(`http://localhost:3001/getSharedFileDownloadLink`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials:'include',
-        body: JSON.stringify({userId:this.props.attr.owner, path:this.props.attr.path})
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            window.open(responseJson.link);
-        }).catch(error => {
-        });
+  handleDownload(link) {
+        window.open(link);
   }
 
   render() {
@@ -65,7 +54,7 @@ class ShareFileButton extends React.Component {
         </DropdownToggle>
         <DropdownMenu>
 
-          {this.props.type === 'file' ? <DropdownItem onClick={() => {this.handleDownload()}}>Download</DropdownItem> : ''}
+          {this.props.type === 'file' ? <DropdownItem onClick={() => {this.handleDownload(this.props.attr.link)}}>Get Link</DropdownItem> : ''}
 
         </DropdownMenu>
       </ButtonDropdown>

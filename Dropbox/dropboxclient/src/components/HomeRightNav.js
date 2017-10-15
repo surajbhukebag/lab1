@@ -77,9 +77,6 @@ class HomeRightNav extends React.Component {
                <NavItem>
                 <NavLink href="#"><NewFolder buttonLabel="Create Folder"/></NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink href="#">New Shared File</NavLink>
-              </NavItem>
  
            </Nav>       
           </div>

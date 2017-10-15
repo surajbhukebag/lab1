@@ -100,3 +100,22 @@ export const userEduInfo = (payload) =>
             console.log("Updating user Education info failed with error : "+error);
             return error;
 });
+
+export const userIntInfo = (payload) =>  
+    fetch(`${api}/userIntInfo`, {
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify(payload)
+    }).then((response) => response.json())
+
+    .then((responseJson) => {
+        return responseJson;
+    })
+        .catch(error => {
+            console.log("Updating user Interest info failed with error : "+error);
+            return error;
+});

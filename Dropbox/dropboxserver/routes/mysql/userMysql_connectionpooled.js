@@ -1,11 +1,10 @@
-var mysql = require('./connection');
+var {pool} = require('./connection');
 var bcrypt = require('bcrypt');
 
-function userSignUp(callback,signupQuery, req){
-    
-    var connection=mysql.getConnection();
+function userSignUp(callback,signupQuery, req){    
 
 
+    pool.getConnection(function(err, connection) { if (err) {  }   else { 
     bcrypt.genSalt(10, function(err, salt) {
         if (!err) {
             
@@ -14,6 +13,7 @@ function userSignUp(callback,signupQuery, req){
                 if(!err) {
 
                     connection.query(signupQuery, [req.param("fname"), req.param("lname"), req.param("email"), hash], function(err, result) {
+                        connection.release();
                         if(err){
                             callback(null, err);
                         }
@@ -23,7 +23,7 @@ function userSignUp(callback,signupQuery, req){
                         }
                     });
                     console.log("\nConnection closed..");
-                    connection.end();
+                    
                 }
                 else {
                     callback(null, err);    
@@ -36,17 +36,18 @@ function userSignUp(callback,signupQuery, req){
         }
 
     });
-    
+}
+  });  
 }
 
 
 function checkUsername(callback,checkUsernameQuery, req){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
 
     connection.query(checkUsernameQuery, req.param("email"), function(err, result) {
-            
+            connection.release();
         if(err){
             console.log(err);
             callback(false, err, result);
@@ -62,18 +63,19 @@ function checkUsername(callback,checkUsernameQuery, req){
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
 
+}});
 }
 
 
 function getUser(callback,checkUsernameQuery, email){
     
-    var connection=mysql.getConnection();
+     
 
-
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
     connection.query(checkUsernameQuery, email, function(err, result) {
-            
+            connection.release();
         if(err){
             callback(false, err, result);
         }
@@ -88,17 +90,18 @@ function getUser(callback,checkUsernameQuery, email){
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
+    }});
 
 }
 
 function getUserById(callback,getUserByIdQuery, id){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
 
     connection.query(getUserByIdQuery, id, function(err, result) {
-            
+            connection.release();
         if(err){
             callback(false, err, result);
         }
@@ -113,15 +116,17 @@ function getUserById(callback,getUserByIdQuery, id){
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
+    }});
 
 }
 
 function userPinfo(callback, userPinfoQuery, req, userId){
     
-    var connection=mysql.getConnection();
+     pool.getConnection(function(err, connection) { if (err) {  }   else { 
 
     connection.query(userPinfoQuery, [req.param("dob"), req.param("contact"), userId], function(err, result) {
+        connection.release();
         if(err){
             callback(null, err, userId);
         }
@@ -131,15 +136,17 @@ function userPinfo(callback, userPinfoQuery, req, userId){
         }
     });
     console.log("\nConnection closed..");
-    connection.end();
+     
+}});
 
 }
 
 function userPinfoUpdate(callback, userPinfoUpdateQuery, req, userId){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
     connection.query(userPinfoUpdateQuery, [req.param("dob"), req.param("contact"), userId], function(err, result) {
+        connection.release();
         if(err){
             callback(null, err, userId);
         }
@@ -149,17 +156,18 @@ function userPinfoUpdate(callback, userPinfoUpdateQuery, req, userId){
         }
     });
     console.log("\nConnection closed..");
-    connection.end();
+     
+}});
 
 }
 
 function checkPinfo(callback,getPInfoQuery, uid){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
 
     connection.query(getPInfoQuery, uid, function(err, result) {
-            
+          connection.release();  
         if(err){
             callback(null, err);
         }
@@ -171,16 +179,17 @@ function checkPinfo(callback,getPInfoQuery, uid){
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
+    }});
 
 }
 
 function checkEduinfo(callback,getEduInfoQuery, uid){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
     connection.query(getEduInfoQuery, uid, function(err, result) {
-            
+           connection.release(); 
         if(err){
             console.log(err);
             callback(null, err);
@@ -193,15 +202,17 @@ function checkEduinfo(callback,getEduInfoQuery, uid){
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
+    }});
 
 }
 
 function userEduinfoUpdate(callback, userEduInfoUpdateQuery, req, userId){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
     connection.query(userEduInfoUpdateQuery, [req.param("college"), req.param("sdate"), req.param("edate"), req.param("major"), req.param("gpa"), userId], function(err, result) {
+        connection.release();
         if(err){
             console.log(err);
             callback(null, err, userId);
@@ -212,15 +223,17 @@ function userEduinfoUpdate(callback, userEduInfoUpdateQuery, req, userId){
         }
     });
     console.log("\nConnection closed..");
-    connection.end();
+     
+}});
 
 }
 
 function userEduinfo(callback, userEduinfoQuery, req, userId){
     
-    var connection=mysql.getConnection();
+     pool.getConnection(function(err, connection) { if (err) {  }   else { 
 
     connection.query(userEduinfoQuery, [req.param("college"), req.param("sdate"), req.param("edate"), req.param("major"), req.param("gpa"), userId], function(err, result) {
+       connection.release();
         if(err){
             console.log(err);
             callback(null, err, userId);
@@ -231,16 +244,17 @@ function userEduinfo(callback, userEduinfoQuery, req, userId){
         }
     });
     console.log("\nConnection closed..");
-    connection.end();
+     
+}});
 
 }
 
 function getInterest(callback,getInterestQuery, name){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
     connection.query(getInterestQuery, name, function(err, result) {
-            
+            connection.release();
         if(err){
             console.log(err);
             callback(null, err);
@@ -253,16 +267,17 @@ function getInterest(callback,getInterestQuery, name){
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
+    }});
 
 }
 
 function addUserInterest(callback,userInterestQuery, interestId, comment, userId ){
     
-    var connection=mysql.getConnection();
-
+     
+pool.getConnection(function(err, connection) { if (err) {  }   else { 
     connection.query(userInterestQuery, [interestId, comment, userId], function(err, result) {
-            
+            connection.release();
         if(err){
             console.log(err);
             callback(null, err);
@@ -275,16 +290,17 @@ function addUserInterest(callback,userInterestQuery, interestId, comment, userId
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
+    }});
 
 }
 
 function getAllInterests(callback,allUserInterestQuery, userId ){
     
-    var connection=mysql.getConnection();
+     pool.getConnection(function(err, connection) { if (err) {  }   else { 
 
     connection.query(allUserInterestQuery, userId, function(err, result) {
-            
+           connection.release(); 
         if(err){
             console.log(err);
             callback(null, err);
@@ -297,8 +313,9 @@ function getAllInterests(callback,allUserInterestQuery, userId ){
         }
         });
         console.log("\nConnection closed..");
-        connection.end();
+         
 
+}});
 }
 
 exports.userSignUp = userSignUp;

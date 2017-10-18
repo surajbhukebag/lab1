@@ -5,11 +5,7 @@ var usermysql = require('./../mysql/userMysql');
 
 function listdir(req,res)
 {
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 	var response = "";
 	let isRoot = true;
 	console.log("dir : "+req.param('dir'));
@@ -72,17 +68,13 @@ function listdir(req,res)
 		}
 	}, filesQuery, createdBy, dir);
 
-	}
+	
 }
 
 function listSharedDir(req,res)
 {
 
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 	var response = "";
 	let isRoot = true;
 	console.log("dir : "+req.param('dir'));
@@ -151,18 +143,14 @@ function listSharedDir(req,res)
 			res.send(JSON.stringify({code:500,msg:"Unable to fetch files."}));	
 		}
 	}, filesQuery, createdBy, dir);
-}
+
 	
 }
 
 function createFolder(req,res)
 {
 	
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 
 	fs.mkdir("./files/" + req.body.email+req.body.path+"/"+req.body.folderName, function(err) {
 		if (!err) {
@@ -194,18 +182,14 @@ function createFolder(req,res)
 			res.send(JSON.stringify({code:500, msg:"New folder creation failed"}));
 		}
 	});
-	}
+	
 
 }
 
 function fileFolderDelete(req,res)
 {
 	
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 
 		let path = req.param("path");
 		let email = req.param("email");
@@ -265,18 +249,14 @@ function fileFolderDelete(req,res)
 			});
 
 		}
-	}
+	
 }
 
 
 function starredFiles(req, res) {
 
 	
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 		let userId = req.param("userId");
 
 		let starredFilesQuery = "select * from files where createdBy = ? and isStarred = ?";
@@ -303,18 +283,14 @@ function starredFiles(req, res) {
 
 		}, starredFilesQuery, userId);			
 	
-	}
+	
 	
 
 }
 
 function generateLink(req, res) {
 
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 		let email = req.param("email");
 		let p = req.param("path");
 		let index = p.lastIndexOf("/");
@@ -399,17 +375,13 @@ function generateLink(req, res) {
 
 		}, getUserQuery,email);
 
-	}
+	
 
 }
 
 function share(req, res) {
 
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 	let email = req.param("email");
 	let p = req.param("path");
 	let index = p.lastIndexOf("/");
@@ -495,16 +467,12 @@ function share(req, res) {
 		}
 	}, getUserQuery, email);
 
-	}
+	
 }
 
 function sharedFiles(req, res) {
 
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 	let email = req.param("email");
 	let getUserQuery = "select * from user where email = ?";
 	usermysql.getUser(function(uniqueUsername, err, result) {
@@ -520,10 +488,10 @@ function sharedFiles(req, res) {
 					for(var i = 0; i < f.length; i++) {
 
 						if(f[i].isDirectory) {
-							folders.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:true});
+							folders.push({name:f[i].name,  path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:true});
 						}
 						else {
-							files.push({name:f[i].name, path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:false});	
+							files.push({name:f[i].name, link:f[i].link, path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:false});	
 						}						
 
 					}
@@ -543,17 +511,13 @@ function sharedFiles(req, res) {
 
 	}, getUserQuery, email);
 
-	}
+	
 
 }
 
 function sharedFileLinks(req, res) {
 
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 
 	let email = req.param("email");
 
@@ -589,17 +553,13 @@ function sharedFileLinks(req, res) {
 
 	}, getUserQuery, email);
 	
-	}
+	
 
 }
 
 function starAFile(req, res) {
 
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 
 	let createdBy = req.param("id");
 	let p = req.param("path");
@@ -661,16 +621,12 @@ function starAFile(req, res) {
 	}, starAFileQuery, isStarred, createdBy, name, path);
 
 }
-}
+
 
 
 function userActivity(req, res) {
 
-	res.setHeader('Content-Type', 'application/json');
-	if(req.session.email === undefined) {
-		res.send(JSON.stringify({ code: 502, msg:"Invalid Session. Please login."}));
-	}
-	else {
+ 
 
 	let userId = req.param('userId');
 
@@ -693,7 +649,7 @@ function userActivity(req, res) {
 			res.send(JSON.stringify({code:500, msg:"Unable to get User Activity."}));	
 		}
 	}, userActivityQuery, userId);
-	}
+	
 }
 
 exports.listdir = listdir;

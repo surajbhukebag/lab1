@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt');
 
 function signup(req, res) {
 
+	console.log("User signup : ----------------");
 	let checkUsernameQuery = "select * from user where email = ?";
 	mysql.checkUsername(function(uniqueUsername, err, result) {
 

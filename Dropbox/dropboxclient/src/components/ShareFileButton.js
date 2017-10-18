@@ -42,7 +42,8 @@ class ShareFileButton extends React.Component {
 
 
   handleDownload(link) {
-        window.open(link);
+
+        window.open(this.props.ul+link);
   }
 
   render() {
@@ -73,7 +74,7 @@ function mapStateToProps(user) {
         pwd = user.files.files.pwd;
         link = user.files.link;    
       }
-      let ul = "http://localhost:3001/fileDownload/"+email+"/";
+      let ul = "http://localhost:3001/fileDownload/";
       return {email, pwd, link, ul, userId};
   }
 }

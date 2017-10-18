@@ -491,7 +491,7 @@ function sharedFiles(req, res) {
 							folders.push({name:f[i].name,  path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:true});
 						}
 						else {
-							files.push({name:f[i].name, link:f[i].link, path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:false});	
+							files.push({name:f[i].name, link:"http://localhost:3001/fileDownload/"+f[i].link, path:f[i].path+f[i].name, owner: f[i].createdBy, isStarred:f[i].isStarred, isDirectory:false});	
 						}						
 
 					}

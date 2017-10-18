@@ -252,12 +252,13 @@ function filedownload(req, res) {
 				}, checkFileActivityQuery, user[0].id, file[0].id);	
 
 
-				let filepath = "files/"+user[0].email+"/"+file[0].path+"/"+file[0].name;
+				let filepath = "files/"+user[0].email+file[0].path+"/"+file[0].name;
 				if(file[0].path === '/') {
-					filepath = "files/"+user[0].email+"/"+file[0].path+file[0].name;
+				console.log("sssss");
+					filepath = "files/"+user[0].email+file[0].path+file[0].name;
 				}
 				
-				console.log("path : "+filepath);
+				console.log("path : llll "+filepath);
 				fs.readFile(filepath, function(err, data) {
 					if (!err) {
 						res.contentType(mime.lookup(filepath));

@@ -43,7 +43,7 @@ class ShareFileButton extends React.Component {
 
   handleDownload(link) {
 
-        window.open(this.props.ul+link);
+        window.open(link);
   }
 
   render() {

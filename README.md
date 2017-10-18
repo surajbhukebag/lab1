@@ -1,9 +1,11 @@
 # lab1
 
-Calculator 
+Calculator - Detailed info in Calculator's README
 	- node.js server
 	- react.js client
 	
-Dropbox Prototype
+
+	
+Dropbox Prototype - Detailed info in Dropbox's README
 	- node.js server
 	- react.js client
